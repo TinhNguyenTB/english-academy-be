@@ -4,14 +4,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-@Data
+@Setter
+@Getter
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ResponseDto<T> {
-    int code;
+    int status;
     String message;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     T data;
 }
