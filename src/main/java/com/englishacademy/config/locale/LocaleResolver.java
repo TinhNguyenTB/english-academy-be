@@ -1,4 +1,4 @@
-package com.englishacademy.config;
+package com.englishacademy.config.locale;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;

@@ -1,4 +1,4 @@
-package com.englishacademy.config;
+package com.englishacademy.config.locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
