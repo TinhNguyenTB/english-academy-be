@@ -4,6 +4,8 @@ import com.englishacademy.dto.request.TopicRequestDTO;
 import com.englishacademy.entity.Topic;
 import com.englishacademy.service.TopicService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,12 +20,12 @@ public class TopicController {
         this.topicService = topicService;
     }
 
-    @GetMapping("/get-all")
-    public List<Topic> getAllTopics() {
-        return topicService.getAllTopics();
+    @GetMapping("/get")
+    public Page<Topic> getAllTopics(Pageable pageable) {
+        return topicService.getAllTopics(pageable);
     }
 
-    @GetMapping("/get/{id}")
+    @GetMapping("/{id}")
     public Topic getTopicById(@PathVariable Long id) {
         return topicService.getTopicById(id);
     }
@@ -33,12 +35,12 @@ public class TopicController {
         topicService.createTopic(topicRequestDTO);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public void updateTopic(@PathVariable Long id, @Valid @RequestBody TopicRequestDTO topicRequestDTO) {
         topicService.updateTopic(id, topicRequestDTO);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public void deleteTopicById(@PathVariable Long id) {
         topicService.deleteTopicById(id);
     }
@@ -48,9 +50,9 @@ public class TopicController {
         topicService.deleteTopics(ids);
     }
 
-    @GetMapping("/find-by-name")
-    public List<Topic> findByName(@RequestParam String name) {
-        return topicService.findByName(name);
+    @GetMapping("/find")
+    public Page<Topic> findByName(@RequestParam String name, Pageable pageable) {
+        return topicService.findByName(name, pageable);
     }
 
 }

@@ -2,14 +2,14 @@ package com.englishacademy.service;
 
 import com.englishacademy.dto.request.LessonRequestDTO;
 import com.englishacademy.entity.Lesson;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface LessonService {
 
     Lesson getLessonById(Long id);
 
-    List<Lesson> getAllLessons();
+    Page<Lesson> getAllLessons(Pageable pageable);
 
     void createLesson(LessonRequestDTO lesson);
 
@@ -17,15 +17,13 @@ public interface LessonService {
 
     void updateLesson(Long id, LessonRequestDTO lesson);
 
-    List<Lesson> findByName(String name);
+    Page<Lesson> findByName(String name, Pageable pageable);
 
-    List<Lesson> findByTopicId(Long topicId);
+    Page<Lesson> findByTopicId(Long topicId, Pageable pageable);
 
-    List<Lesson> findByOrderIndex(int orderIndex);
+    Page<Lesson> findByOrderIndex(int orderIndex, Pageable pageable);
 
-    List<Lesson> findByTotalQuestion(int totalQuestion);
-
-
+    Page<Lesson> findByTotalQuestion(int totalQuestion, Pageable pageable);
 
 
 }

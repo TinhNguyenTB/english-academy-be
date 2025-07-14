@@ -1,17 +1,18 @@
 package com.englishacademy.repository;
 
 import com.englishacademy.entity.Lesson;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
 
 public interface LessonRepository extends JpaRepository<Lesson, Long> {
 
-    List<Lesson> findByName(String name);
+    Page<Lesson> findByName(String name, Pageable pageable);
 
-    List<Lesson> findByTopicId(Long topicId);
+    Page<Lesson> findByTopicId(Long topicId, Pageable pageable);
 
-    List<Lesson> findByOrderIndex(int orderIndex);
+    Page<Lesson> findByOrderIndex(int orderIndex, Pageable pageable);
 
-    List<Lesson> findByTotalQuestion(int totalQuestion);
+    Page<Lesson> findByTotalQuestion(int totalQuestion, Pageable pageable);
 }

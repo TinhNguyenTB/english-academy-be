@@ -5,6 +5,8 @@ import com.englishacademy.entity.Topic;
 import com.englishacademy.mapper.TopicMapper;
 import com.englishacademy.repository.TopicRepository;
 import com.englishacademy.service.TopicService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,8 +23,8 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
-    public List<Topic> getAllTopics() {
-        return topicRepository.findAll();
+    public Page<Topic> getAllTopics(Pageable pageable) {
+        return topicRepository.findAll(pageable);
     }
 
     @Override
@@ -54,7 +56,8 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
-    public List<Topic> findByName(String name) {
-        return topicRepository.findByName(name);
+    public Page<Topic> findByName(String name, Pageable pageable) {
+        return topicRepository.findByName(name, pageable);
     }
+
 }

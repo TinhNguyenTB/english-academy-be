@@ -6,7 +6,8 @@ import com.englishacademy.mapper.LessonMapper;
 import com.englishacademy.repository.LessonRepository;
 import com.englishacademy.service.LessonService;
 import org.springframework.stereotype.Service;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 @Service
@@ -26,8 +27,8 @@ public class LessonServiceImpl implements LessonService {
     }
 
     @Override
-    public List<Lesson> getAllLessons() {
-        return lessonRepository.findAll();
+    public Page<Lesson> getAllLessons(Pageable pageable) {
+        return lessonRepository.findAll(pageable);
     }
 
 
@@ -49,23 +50,23 @@ public class LessonServiceImpl implements LessonService {
     }
 
     @Override
-    public List<Lesson> findByName(String name) {
-        return lessonRepository.findByName(name);
+    public Page<Lesson> findByName(String name, Pageable pageable) {
+        return lessonRepository.findByName(name, pageable);
     }
 
     @Override
-    public List<Lesson> findByTopicId(Long topicId) {
-        return lessonRepository.findByTopicId(topicId);
+    public Page<Lesson> findByTopicId(Long topicId, Pageable pageable) {
+        return lessonRepository.findByTopicId(topicId, pageable);
     }
 
     @Override
-    public List<Lesson> findByOrderIndex(int orderIndex) {
-        return lessonRepository.findByOrderIndex(orderIndex);
+    public Page<Lesson> findByOrderIndex(int orderIndex, Pageable pageable) {
+        return lessonRepository.findByOrderIndex(orderIndex, pageable);
     }
 
     @Override
-    public List<Lesson> findByTotalQuestion(int totalQuestion) {
-        return lessonRepository.findByTotalQuestion(totalQuestion);
+    public Page<Lesson> findByTotalQuestion(int totalQuestion, Pageable pageable) {
+        return lessonRepository.findByTotalQuestion(totalQuestion, pageable);
     }
 
 }

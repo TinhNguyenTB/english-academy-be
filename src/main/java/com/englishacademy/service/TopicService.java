@@ -2,13 +2,15 @@ package com.englishacademy.service;
 
 import com.englishacademy.dto.request.TopicRequestDTO;
 import com.englishacademy.entity.Topic;
-import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 
 import java.util.List;
 
 
 public interface TopicService {
-     List<Topic> getAllTopics();
+     Page<Topic> getAllTopics(Pageable pageable);
 
      Topic getTopicById(Long id);
 
@@ -20,5 +22,5 @@ public interface TopicService {
 
      void deleteTopics(List<Long> ids);
 
-     List<Topic> findByName(String name);
+     Page<Topic> findByName(String name, Pageable pageable);
 }
