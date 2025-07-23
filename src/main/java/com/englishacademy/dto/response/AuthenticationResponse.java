@@ -12,4 +12,7 @@ import lombok.experimental.FieldDefaults;
 public class AuthenticationResponse {
     boolean authenticated;
     String token;
+    String email;
+    String name;
+    String avatarUrl;
 }
