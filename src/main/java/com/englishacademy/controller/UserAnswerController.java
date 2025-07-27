@@ -4,7 +4,6 @@ import com.englishacademy.dto.request.UserAnswerRequestDTO;
 import com.englishacademy.entity.UserAnswer;
 import com.englishacademy.service.UserAnswerService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
