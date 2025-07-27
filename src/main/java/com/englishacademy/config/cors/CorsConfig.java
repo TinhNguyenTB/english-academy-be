@@ -1,5 +1,6 @@
 package com.englishacademy.config.cors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +13,10 @@ import java.util.List;
 
 @Configuration
 public class CorsConfig {
+
+    @Value("${fe.url}")
+    private String feUrl;
+
     @Bean
     public FilterRegistrationBean<CorsFilter> corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -19,7 +24,7 @@ public class CorsConfig {
 
         config.setAllowCredentials(true);
         config.setAllowedHeaders(List.of("*"));
-        config.setAllowedOrigins(List.of("http://localhost:3000"));
+        config.setAllowedOrigins(List.of(feUrl));
         config.setAllowedMethods(List.of("*"));
 
         source.registerCorsConfiguration("/**", config);
