@@ -21,7 +21,6 @@ public class QuestionOption {
     @Column(name = "prompt", nullable = false)
     private String prompt;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "option_text", nullable = false)
     private String optionText;
 
