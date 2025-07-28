@@ -2,6 +2,7 @@ package com.englishacademy.entity;
 
 
 import jakarta.persistence.*;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,7 @@ public class QuestionOption {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id", nullable = false)
     private Question question;
+
 
     @Column(name = "prompt", nullable = false)
     private String prompt;

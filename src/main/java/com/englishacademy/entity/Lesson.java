@@ -26,6 +26,7 @@ public class Lesson {
     @JoinColumn(name = "topic_id", nullable = false)
     private Topic topic;
 
+
     @Column(name = "name", nullable = false)
     private String name;
 
@@ -37,4 +38,5 @@ public class Lesson {
 
     @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Question> questions;
+
 }

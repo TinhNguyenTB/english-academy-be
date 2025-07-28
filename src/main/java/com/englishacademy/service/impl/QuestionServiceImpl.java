@@ -30,6 +30,7 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public Page<Question> getQuestionsByQuestionType(QuestionType questionType, Pageable pageable) {
         return questionRepository.findByType(questionType, pageable);
+
     }
 
     @Override

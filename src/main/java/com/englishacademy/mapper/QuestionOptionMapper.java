@@ -5,6 +5,7 @@ import com.englishacademy.entity.QuestionOption;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 
+
 @Mapper(componentModel = "spring")
 public interface QuestionOptionMapper {
 

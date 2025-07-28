@@ -29,5 +29,4 @@ public interface QuestionService {
     Page<Question> getQuestionsByLessonIdAndQuestionType(Long lessonId, QuestionType questionType, Pageable pageable);
 
     Page<Question> getByLessonId(Long lessonId, Pageable pageable);
-
 }

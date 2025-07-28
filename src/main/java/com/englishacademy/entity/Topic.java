@@ -29,6 +29,7 @@ public class Topic {
     @Column(name= "order_index", nullable = false)
     private int orderIndex;
 
+
     @Column(name = "price", nullable = false)
     private double price;
 
@@ -37,5 +38,6 @@ public class Topic {
 
     @OneToMany(mappedBy = "topic", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Lesson> lessons;
+
 
 }

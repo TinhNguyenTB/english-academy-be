@@ -4,7 +4,6 @@ import com.englishacademy.entity.UserAnswer;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.sql.Timestamp;
 
 public interface UserAnswerRepository extends JpaRepository<UserAnswer, Long> {

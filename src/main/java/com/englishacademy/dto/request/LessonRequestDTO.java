@@ -22,4 +22,5 @@ public class LessonRequestDTO {
 
     @Min(value = 0, message = "Tổng số câu hỏi không được bé hơn 0")
     private int totalQuestion;
+
 }

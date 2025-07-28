@@ -8,8 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
 
+import java.util.List;
 @Entity
 @Table(name = "questions")
 @NoArgsConstructor
@@ -25,7 +25,7 @@ public class Question {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lesson_id", nullable = false)
     private Lesson lesson;
-
+  
     @Enumerated(EnumType.STRING)
     @Column(name="type", nullable = false)
     private QuestionType type;
@@ -51,5 +51,6 @@ public class Question {
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserAnswer> answers;
+
 
 }
