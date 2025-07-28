@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -20,17 +22,21 @@ public class Lesson {
     @Column(name = "code", nullable = false, unique = true)
     private String code;
 
-    @Column(name = "topic_id", nullable = false)
-    private Long topic_id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "topic_id", nullable = false)
+    private Topic topic;
+
 
     @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "order_index", nullable = false)
-    private int order_index;
+    private int orderIndex;
 
     @Column(name="total_question", nullable = false)
-    private int total_question;
+    private int totalQuestion;
 
+    @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Question> questions;
 
 }

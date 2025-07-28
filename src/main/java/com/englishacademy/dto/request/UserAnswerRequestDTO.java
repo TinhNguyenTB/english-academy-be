@@ -1,6 +1,8 @@
 package com.englishacademy.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import java.sql.Timestamp;
@@ -14,7 +16,7 @@ public class UserAnswerRequestDTO {
     @NotNull(message = "không được để trống questionId")
     private Long questionId;
 
-    @NotBlank(message = "không được để trống selectedAnswer")
+    @NotEmpty(message = "không được để trống selectedAnswer")
     private String selectedAnswer;
 
     private boolean isCorrect;

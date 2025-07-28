@@ -28,28 +28,24 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public Page<Question> getQuestionsByLessonId(Long lessonId, Pageable pageable) {
-        return questionRepository.findQuestionByLessonId(lessonId, pageable);
-    }
-
-    @Override
     public Page<Question> getQuestionsByQuestionType(QuestionType questionType, Pageable pageable) {
-        return questionRepository.findQuestionByQuestionType(questionType, pageable);
+        return questionRepository.findByType(questionType, pageable);
+
     }
 
     @Override
     public Page<Question> getQuestionsByOptionType(OptionType optionType, Pageable pageable) {
-        return questionRepository.findQuestionByOptionType(optionType, pageable);
+        return questionRepository.findByOptionType(optionType, pageable);
     }
 
     @Override
     public Page<Question> getQuestionsByPrompt(String prompt, Pageable pageable) {
-        return questionRepository.findQuestionByPromptContaining(prompt, pageable);
+        return questionRepository.findByPromptContaining(prompt, pageable);
     }
 
     @Override
     public Page<Question> getQuestionsByCorrectAnswer(String correctAnswer, Pageable pageable) {
-        return questionRepository.findQuestionByCorrectAnswerContaining(correctAnswer, pageable);
+        return questionRepository.findByCorrectAnswerContaining(correctAnswer, pageable);
     }
 
     @Override
@@ -60,7 +56,7 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public Question updateQuestion(Long id, QuestionRequestDTO question) {
         Question questionEntity = questionRepository.findById(id).orElse(null);
-        if(questionEntity != null) {
+        if (questionEntity != null) {
             questionMapper.updateEntity(question, questionEntity);
             return questionRepository.save(questionEntity);
         }
@@ -79,6 +75,12 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public Page<Question> getQuestionsByLessonIdAndQuestionType(Long lessonId, QuestionType questionType, Pageable pageable) {
-        return questionRepository.findQuestionByLessonIdAndQuestionType(lessonId, questionType, pageable);
+        return questionRepository.findByLesson_IdAndType(lessonId, questionType, pageable);
     }
+
+    @Override
+    public Page<Question> getByLessonId(Long lessonId, Pageable pageable) {
+        return questionRepository.findByLesson_Id(lessonId, pageable);
+    }
+
 }

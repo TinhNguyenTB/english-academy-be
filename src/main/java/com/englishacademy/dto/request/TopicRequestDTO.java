@@ -14,10 +14,10 @@ public class TopicRequestDTO {
     private String description;
 
     @Min(value = 1, message = "Chỉ số thứ tự phải lớn hơn hoặc bằng 1")
-    private int order_index;
+    private int orderIndex;
 
     @PositiveOrZero(message = "Giá phải là số dương hoặc bằng 0")
     private double price;
 
-    private boolean is_free;
+    private boolean isFree;
 }

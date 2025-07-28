@@ -51,7 +51,7 @@ public class QuestionController {
 
     @GetMapping("/lesson/{lessonId}")
     public Page<Question> getQuestionsByLessonId(@PathVariable Long lessonId, Pageable pageable) {
-        return questionService.getQuestionsByLessonId(lessonId, pageable);
+        return questionService.getByLessonId(lessonId, pageable);
     }
 
     @GetMapping("/type/{questionType}")

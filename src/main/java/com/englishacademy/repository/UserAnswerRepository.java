@@ -16,11 +16,11 @@ public interface UserAnswerRepository extends JpaRepository<UserAnswer, Long> {
 
     Page<UserAnswer> findAllByQuestionId(Long questionId, Pageable pageable);
 
-    Page<UserAnswer> findAllByIsCorrect(boolean isCorrect, Pageable pageable);
+    Page<UserAnswer> findAllByIsCorrect(boolean Correct, Pageable pageable);
 
     Page<UserAnswer> findAllByAnsweredAtBetween(Timestamp start, Timestamp end, Pageable pageable);
 
-    Page<UserAnswer> findAllByUserIdAndIsCorrect(Long userId, boolean isCorrect, Pageable pageable);
+    Page<UserAnswer> findAllByUserIdAndIsCorrect(Long userId, boolean Correct, Pageable pageable);
 
     Page<UserAnswer> findAllBySelectedAnswer(String selectedAnswer, Pageable pageable);
 

@@ -10,8 +10,6 @@ import org.springframework.data.domain.Pageable;
 public interface QuestionService {
     Page<Question> getAllQuestions(Pageable pageable);
 
-    Page<Question> getQuestionsByLessonId(Long lessonId, Pageable pageable);
-
     Page<Question> getQuestionsByQuestionType(QuestionType questionType, Pageable pageable);
 
     Page<Question> getQuestionsByOptionType(OptionType optionType, Pageable pageable);
@@ -30,4 +28,5 @@ public interface QuestionService {
 
     Page<Question> getQuestionsByLessonIdAndQuestionType(Long lessonId, QuestionType questionType, Pageable pageable);
 
+    Page<Question> getByLessonId(Long lessonId, Pageable pageable);
 }

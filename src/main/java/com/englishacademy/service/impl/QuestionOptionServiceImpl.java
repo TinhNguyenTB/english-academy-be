@@ -43,7 +43,8 @@ public class QuestionOptionServiceImpl implements QuestionOptionService {
 
     @Override
     public Page<QuestionOption> getQuestionOptionsByQuestionId(Long questionId, Pageable pageable) {
-        return questionOptionRepository.findByQuestionId(questionId, pageable);
+        return questionOptionRepository.findByQuestion_Id(questionId, pageable);
+
     }
 
     @Override

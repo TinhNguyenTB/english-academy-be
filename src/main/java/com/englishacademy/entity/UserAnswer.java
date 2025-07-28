@@ -22,8 +22,10 @@ public class UserAnswer {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Column(name = "question_id", nullable = false)
-    private Long questionId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "question_id", nullable = false)
+    private Question question;
+
 
     @Column(name = "selected_answer", nullable = false)
     private String selectedAnswer;

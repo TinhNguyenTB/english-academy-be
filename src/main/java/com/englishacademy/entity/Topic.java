@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -25,12 +27,17 @@ public class Topic {
     private String description;
 
     @Column(name= "order_index", nullable = false)
-    private int order_index;
+    private int orderIndex;
+
 
     @Column(name = "price", nullable = false)
     private double price;
 
     @Column(name = "is_free", nullable = false)
-    private boolean is_free;
+    private boolean isFree;
+
+    @OneToMany(mappedBy = "topic", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Lesson> lessons;
+
 
 }
