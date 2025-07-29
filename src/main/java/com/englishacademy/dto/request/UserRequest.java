@@ -14,9 +14,9 @@ import java.io.Serializable;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserRequest implements Serializable {
 
-    @NotBlank(message = "{error.name}")
+    @NotBlank(message = "{user.name.not.blank}")
     String name;
-    @Email(message = "Invalid email")
+    @Email(message = "{user.email.must.be.valid}")
     String email;
     String password;
     String role;

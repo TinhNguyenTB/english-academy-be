@@ -11,8 +11,8 @@ import lombok.experimental.FieldDefaults;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PermissionRequest {
-    @NotBlank(message = "Permission name must no be blank")
-    @NotNull(message = "Permission name must no be null")
+    @NotBlank(message = "{permission.name.not.blank}")
+    @NotNull(message = "{permission.name.not.null}")
     String name;
     String description;
 }

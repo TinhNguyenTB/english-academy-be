@@ -8,18 +8,18 @@ import lombok.Data;
 @Data
 public class LessonRequestDTO {
 
-    @NotBlank(message = "Mã bài học không được để trống")
+    @NotBlank(message = "{lesson.code.not.blank}")
     private String code;
 
-    @NotNull(message = "ID chủ đề không được để trống")
+    @NotNull(message = "{lesson.topicId.not.null}")
     private Long topicId;
 
-    @NotBlank(message = "Tên bài học không được để trống")
+    @NotBlank(message = "{lesson.name.not.blank}")
     private String name;
 
-    @Min(value = 1, message = "Số thứ tự không được bé hơn 1")
+    @Min(value = 1, message = "{lesson.orderIndex.must.greater.or.equal.to.one}")
     private int orderIndex;
 
-    @Min(value = 0, message = "Tổng số câu hỏi không được bé hơn 0")
+    @Min(value = 0, message = "{lesson.totalQuestion.must.greater.or.equal.to.zero}")
     private int totalQuestion;
 }

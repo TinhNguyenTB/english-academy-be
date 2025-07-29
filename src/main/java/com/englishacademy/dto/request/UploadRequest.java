@@ -12,9 +12,9 @@ import org.springframework.web.multipart.MultipartFile;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UploadRequest {
-    @NotNull(message = "file cannot be null")
+    @NotNull(message = "{upload.file.not.null}")
     MultipartFile file;
 
-    @NotBlank(message = "type cannot be blank")
+    @NotBlank(message = "{upload.type.not.blank}")
     String type; // image | video | raw | auto
 }

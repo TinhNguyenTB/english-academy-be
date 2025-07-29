@@ -10,24 +10,24 @@ import lombok.Data;
 @Data
 public class QuestionRequestDTO {
 
-    @NotNull(message = "không được để trống lessonId")
+    @NotNull(message = "{question.lessonId.not.null}")
     private Long lessonId;
 
-    @NotNull(message = "không được để trống loại câu hỏi")
+    @NotNull(message = "{question.type.not.null}")
     private QuestionType type;
 
-    @NotBlank(message = "không được để trống câu hỏi")
+    @NotBlank(message = "{question.prompt.not.blank}")
     private String prompt;
 
-    @NotNull(message = "không được để trống loại đáp án")
+    @NotNull(message = "{question.optionType.not.null}")
     private OptionType optionType;
 
-    @NotBlank(message = "không được để trống đáp án đúng")
+    @NotBlank(message = "{question.correctAnswer.not.blank}")
     private String correctAnswer;
 
-    @Size(max = 300, message = "url không được quá 300 ký tự")
+    @Size(max = 300, message = "{question.mediaUrl.size.limit}")
     private String mediaUrl;
 
-    @Size(max = 500, message = "giải thích không được quá 500 ký tự")
+    @Size(max = 500, message = "{question.explanation.size.limit}")
     private String explanation;
 }
