@@ -10,6 +10,6 @@ public class UserResponse {
     private Long id;
     private String email;
     private String name;
-    String avatarUrl;
+    private String avatarUrl;
     RoleResponse role;
 }
