@@ -8,15 +8,15 @@ import lombok.Data;
 @Data
 public class TopicRequestDTO {
 
-    @NotBlank(message = "Không được để trống tên chủ đề")
+    @NotBlank(message = "{topic.name.not.blank}")
     private String name;
 
     private String description;
 
-    @Min(value = 1, message = "Chỉ số thứ tự phải lớn hơn hoặc bằng 1")
+    @Min(value = 1, message = "{topic.orderIndex.must.greater.or.equal.to.one}")
     private int orderIndex;
 
-    @PositiveOrZero(message = "Giá phải là số dương hoặc bằng 0")
+    @PositiveOrZero(message = "{topic.price.must.greater.or.equal.to.zero}")
     private double price;
 
     private boolean isFree;

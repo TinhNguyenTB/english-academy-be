@@ -9,18 +9,18 @@ import java.sql.Timestamp;
 @Data
 public class UserAnswerRequestDTO {
 
-    @NotNull(message = "không được để trống userId")
+    @NotNull(message = "{user.answer.userId.not.null}")
     private Long userId;
 
-    @NotNull(message = "không được để trống questionId")
+    @NotNull(message = "{user.answer.questionId.not.null}")
     private Long questionId;
 
-    @NotEmpty(message = "không được để trống selectedAnswer")
+    @NotEmpty(message = "{user.answer.selectedAnswer.not.empty}")
     private String selectedAnswer;
 
     private boolean isCorrect;
 
-    @NotNull(message = "không được để trống answeredAt")
+    @NotNull(message = "{user.answer.answeredAt.not.null}")
     private Timestamp answeredAt;
 
 }
