@@ -37,4 +37,27 @@ public class LessonProgressController {
                 .data(response)
                 .build();
     }
+
+    @PutMapping("/{id}")
+    public ResponseData<LessonProgressResponse> update(
+            @PathVariable Long id,
+            @RequestBody @Valid LessonProgressRequest request
+    ){
+     LessonProgressResponse response = lessonProgressService.update(id, request);
+     return ResponseData.<LessonProgressResponse>builder()
+             .code(HttpStatus.CREATED.value())
+             .message("Update lesson progress")
+             .data(response)
+             .build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseData<Void> deleteById (@PathVariable Long id){
+        lessonProgressService.delete(id);
+        return ResponseData.<Void>builder()
+                .code(HttpStatus.NO_CONTENT.value())
+                .message("Delete lesson progress successfully")
+                .build();
+
+    }
 }
