@@ -56,7 +56,10 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     public Page<Lesson> findByName(String name, Pageable pageable) {
-        return lessonRepository.findByName(name, pageable);
+       if(!name.isBlank()){
+           return lessonRepository.findByNameContainsIgnoreCase(name, pageable);
+       }
+         return lessonRepository.findAll(pageable);
     }
 
     @Override

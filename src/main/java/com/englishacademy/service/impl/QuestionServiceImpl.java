@@ -1,10 +1,12 @@
 package com.englishacademy.service.impl;
 
 import com.englishacademy.dto.request.QuestionRequestDTO;
+import com.englishacademy.entity.Lesson;
 import com.englishacademy.entity.Question;
 import com.englishacademy.enums.OptionType;
 import com.englishacademy.enums.QuestionType;
 import com.englishacademy.mapper.QuestionMapper;
+import com.englishacademy.repository.LessonRepository;
 import com.englishacademy.repository.QuestionRepository;
 import com.englishacademy.service.QuestionService;
 import org.springframework.data.domain.Page;
@@ -16,10 +18,12 @@ public class QuestionServiceImpl implements QuestionService {
 
     private QuestionRepository questionRepository;
     private QuestionMapper questionMapper;
+    private LessonRepository lessonRepository;
 
-    public QuestionServiceImpl(QuestionRepository questionRepository, QuestionMapper questionMapper) {
+    public QuestionServiceImpl(QuestionRepository questionRepository, QuestionMapper questionMapper, LessonRepository lessonRepository) {
         this.questionRepository = questionRepository;
         this.questionMapper = questionMapper;
+        this.lessonRepository = lessonRepository;
     }
 
     @Override
@@ -48,8 +52,12 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public Question createQuestion(QuestionRequestDTO question) {
-        return questionRepository.save(questionMapper.mapToEntity(question));
+    public Question createQuestion(QuestionRequestDTO questionRequestDTO) {
+        Long lessonId = questionRequestDTO.getLessonId();
+        Lesson lesson = lessonRepository.findById(lessonId).get();
+        Question question = questionMapper.mapToEntity(questionRequestDTO);
+        question.setLesson(lesson);
+        return questionRepository.save(question);
     }
 
     @Override

@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface LessonRepository extends JpaRepository<Lesson, Long> {
 
-    Page<Lesson> findByName(String name, Pageable pageable);
+    Page<Lesson> findByNameContainsIgnoreCase(String name, Pageable pageable);
 
     Page<Lesson> findByTopicId(Long topicId, Pageable pageable);
 

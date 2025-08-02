@@ -1,29 +1,37 @@
 package com.englishacademy.service.impl;
 
 import com.englishacademy.dto.request.UserAnswerRequestDTO;
+import com.englishacademy.entity.Question;
 import com.englishacademy.entity.UserAnswer;
 import com.englishacademy.mapper.UserAnswerMapper;
+import com.englishacademy.repository.QuestionRepository;
 import com.englishacademy.repository.UserAnswerRepository;
 import com.englishacademy.service.UserAnswerService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Service
 public class UserAnswerServiceImpl implements UserAnswerService {
 
     private UserAnswerRepository userAnswerRepository;
     private UserAnswerMapper userAnswerMapper;
+    private QuestionRepository questionRepository;
 
-    public UserAnswerServiceImpl(UserAnswerRepository userAnswerRepository, UserAnswerMapper userAnswerMapper) {
+    public UserAnswerServiceImpl(UserAnswerRepository userAnswerRepository, UserAnswerMapper userAnswerMapper, QuestionRepository questionRepository) {
         this.userAnswerRepository = userAnswerRepository;
         this.userAnswerMapper = userAnswerMapper;
+        this.questionRepository = questionRepository;
     }
 
     @Override
     public void  createUserAnswer(UserAnswerRequestDTO userAnswerRequestDTO) {
-        userAnswerRepository.save(userAnswerMapper.toUserAnswer(userAnswerRequestDTO));
+        Long questionId = userAnswerRequestDTO.getQuestionId();
+        Question question = questionRepository.findById(questionId).orElse(null);
+        UserAnswer userAnswer = userAnswerMapper.toUserAnswer(userAnswerRequestDTO);
+        userAnswer.setQuestion(question);
+        userAnswerRepository.save(userAnswer);
     }
 
     @Override
@@ -64,7 +72,7 @@ public class UserAnswerServiceImpl implements UserAnswerService {
     }
 
     @Override
-    public Page<UserAnswer> getUserAnswerByAnsweredAtBetween(Timestamp start, Timestamp end, Pageable pageable) {
+    public Page<UserAnswer> getUserAnswerByAnsweredAtBetween(LocalDateTime start, LocalDateTime end, Pageable pageable) {
         return userAnswerRepository.findAllByAnsweredAtBetween(start, end, pageable);
     }
 
@@ -76,11 +84,6 @@ public class UserAnswerServiceImpl implements UserAnswerService {
     @Override
     public boolean existsByUserIdAndQuestionId(Long userId, Long questionId) {
         return userAnswerRepository.existsByUserIdAndQuestionId(userId, questionId);
-    }
-
-    @Override
-    public UserAnswer findByUserIdAndQuestionId(Long userId, Long questionId) {
-        return userAnswerRepository.findByUserIdAndQuestionId(userId, questionId);
     }
 
     @Override

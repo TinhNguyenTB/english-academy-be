@@ -1,10 +1,10 @@
 package com.englishacademy.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
+
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Data
 public class UserAnswerRequestDTO {
@@ -21,6 +21,6 @@ public class UserAnswerRequestDTO {
     private boolean isCorrect;
 
     @NotNull(message = "{user.answer.answeredAt.not.null}")
-    private Timestamp answeredAt;
+    private LocalDateTime answeredAt;
 
 }

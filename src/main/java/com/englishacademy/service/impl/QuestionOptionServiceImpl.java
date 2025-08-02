@@ -1,9 +1,11 @@
 package com.englishacademy.service.impl;
 
 import com.englishacademy.dto.request.QuestionOptionRequestDTO;
+import com.englishacademy.entity.Question;
 import com.englishacademy.entity.QuestionOption;
 import com.englishacademy.mapper.QuestionOptionMapper;
 import com.englishacademy.repository.QuestionOptionRepository;
+import com.englishacademy.repository.QuestionRepository;
 import com.englishacademy.service.QuestionOptionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,15 +15,21 @@ import org.springframework.stereotype.Service;
 public class QuestionOptionServiceImpl implements QuestionOptionService {
     private QuestionOptionRepository questionOptionRepository;
     private QuestionOptionMapper questionOptionMapper;
+    private QuestionRepository questionRepository;
 
-    public QuestionOptionServiceImpl(QuestionOptionRepository questionOptionRepository, QuestionOptionMapper questionOptionMapper) {
+    public QuestionOptionServiceImpl(QuestionOptionRepository questionOptionRepository, QuestionOptionMapper questionOptionMapper, QuestionRepository questionRepository) {
         this.questionOptionRepository = questionOptionRepository;
         this.questionOptionMapper = questionOptionMapper;
+        this.questionRepository = questionRepository;
     }
 
     @Override
     public void createQuestionOption(QuestionOptionRequestDTO questionOptionRequestDTO) {
-        questionOptionRepository.save(questionOptionMapper.mapToEntity(questionOptionRequestDTO));
+        Long questionId = questionOptionRequestDTO.getQuestionId();
+        Question question = questionRepository.findById(questionId).get();
+        QuestionOption questionOption = questionOptionMapper.mapToEntity(questionOptionRequestDTO);
+        questionOption.setQuestion(question);
+        questionOptionRepository.save(questionOption);
     }
 
     @Override
@@ -42,8 +50,8 @@ public class QuestionOptionServiceImpl implements QuestionOptionService {
     }
 
     @Override
-    public Page<QuestionOption> getQuestionOptionsByQuestionId(Long questionId, Pageable pageable) {
-        return questionOptionRepository.findByQuestion_Id(questionId, pageable);
+    public QuestionOption getQuestionOptionsByQuestionId(Long questionId) {
+        return questionOptionRepository.findByQuestion_Id(questionId);
     }
 
     @Override
