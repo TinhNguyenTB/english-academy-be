@@ -2,24 +2,25 @@ package com.englishacademy.service.impl;
 
 import com.englishacademy.dto.request.LessonRequestDTO;
 import com.englishacademy.entity.Lesson;
+import com.englishacademy.entity.Topic;
 import com.englishacademy.mapper.LessonMapper;
 import com.englishacademy.repository.LessonRepository;
+import com.englishacademy.repository.TopicRepository;
 import com.englishacademy.service.LessonService;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import java.util.List;
-
+@RequiredArgsConstructor
 @Service
+@FieldDefaults(makeFinal = true)
 public class LessonServiceImpl implements LessonService {
 
     private LessonRepository lessonRepository;
     private LessonMapper lessonMapper;
-
-    public LessonServiceImpl(LessonRepository lessonRepository, LessonMapper lessonMapper) {
-        this.lessonRepository = lessonRepository;
-        this.lessonMapper = lessonMapper;
-    }
+    private TopicRepository topicRepository;
 
     @Override
     public Lesson getLessonById(Long id) {
@@ -33,8 +34,12 @@ public class LessonServiceImpl implements LessonService {
 
 
     @Override
-    public void createLesson(LessonRequestDTO lesson) {
-        lessonRepository.save(lessonMapper.toEntity(lesson));
+    public void createLesson(LessonRequestDTO requestDTO) {
+        Lesson lesson = lessonMapper.toEntity(requestDTO);
+        Topic topic = topicRepository.findById(requestDTO.getTopicId())
+                .orElseThrow(()-> new RuntimeException("Topic not found"));
+        lesson.setTopic(topic);
+        lessonRepository.save(lesson);
     }
 
     @Override
@@ -51,7 +56,10 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     public Page<Lesson> findByName(String name, Pageable pageable) {
-        return lessonRepository.findByName(name, pageable);
+       if(!name.isBlank()){
+           return lessonRepository.findByNameContainsIgnoreCase(name, pageable);
+       }
+         return lessonRepository.findAll(pageable);
     }
 
     @Override

@@ -8,6 +8,7 @@ import com.englishacademy.service.QuestionOptionService;
 import jakarta.transaction.Transaction;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -44,8 +45,8 @@ public class QuestionOptionController {
                 .build();
     }
 
-    @PostMapping("/update/{id}")
-    public ResponseData<Void>  updateQuestionOption(@PathVariable Long id,@Valid @RequestBody QuestionOptionRequestDTO questionOption) {
+    @PutMapping("/{id}")
+    public ResponseData<Void> updateQuestionOption(@PathVariable Long id,@Valid @RequestBody QuestionOptionRequestDTO questionOption) {
         questionOptionService.updateQuestionOption(id, questionOption);
         return ResponseData.<Void>builder()
                 .message(Translator.toLocale("question.option.update.success"))
@@ -53,8 +54,8 @@ public class QuestionOptionController {
                 .build();
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseData<Void>  deleteQuestionOption(@PathVariable Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseData<Void> deleteQuestionOption(@PathVariable Long id) {
         questionOptionService.deleteQuestionOption(id);
         return ResponseData.<Void>builder()
                 .message(Translator.toLocale("question.option.delete.success"))
@@ -63,9 +64,9 @@ public class QuestionOptionController {
     }
 
     @GetMapping("/get-by-questionid")
-    public ResponseData<Page<QuestionOption>> getQuestionOptionsByQuestionId(@NotBlank @RequestParam Long questionId, Pageable pageable) {
-        Page<QuestionOption> questionOptions = questionOptionService.getQuestionOptionsByQuestionId(questionId, pageable);
-        return ResponseData.<Page<QuestionOption>>builder()
+    public ResponseData<QuestionOption> getQuestionOptionsByQuestionId(@NotNull @RequestParam Long questionId) {
+        QuestionOption questionOptions = questionOptionService.getQuestionOptionsByQuestionId(questionId);
+        return ResponseData.<QuestionOption>builder()
                     .message(Translator.toLocale("question.option.find.by.question.id.success"))
                 .data(questionOptions)
                 .code(HttpStatus.OK.value())
@@ -73,7 +74,7 @@ public class QuestionOptionController {
     }
 
     @GetMapping("/get-by-iscorrect")
-    public ResponseData<Page<QuestionOption>> getQuestionOptionsByIsCorrect(@NotBlank @RequestParam Boolean isCorrect, Pageable pageable) {
+    public ResponseData<Page<QuestionOption>> getQuestionOptionsByIsCorrect(@RequestParam Boolean isCorrect, Pageable pageable) {
         Page<QuestionOption> questionOptions = questionOptionService.getQuestionOptionsByIsCorrect(isCorrect, pageable);
         return ResponseData.<Page<QuestionOption>>builder()
                 .message(Translator.toLocale("question.option.find.by.is.correct.success"))
