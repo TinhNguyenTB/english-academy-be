@@ -3,6 +3,7 @@ package com.englishacademy.service.impl;
 import com.englishacademy.dto.request.LessonProgressRequest;
 import com.englishacademy.dto.response.LessonProgressResponse;
 import com.englishacademy.entity.LessonProgress;
+import com.englishacademy.exception.BadRequestException;
 import com.englishacademy.mapper.LessonProgressMapper;
 import com.englishacademy.repository.LessonProgressRepository;
 import com.englishacademy.repository.LessonRepository;
@@ -30,15 +31,15 @@ public class LessonProgressServiceImpl implements LessonProgressService {
         Long lessonId = request.getLessonId();
 
         if (!userRepository.existsById(userId)) {
-            throw new RuntimeException("User not found with ID: " + userId);
+            throw new BadRequestException("User not found with ID: " + userId);
         }
         if (!lessonRepository.existsById(lessonId)) {
-            throw new RuntimeException("Lesson not found with ID: " + lessonId);
+            throw new BadRequestException("Lesson not found with ID: " + lessonId);
         }
 
         boolean exists = lessonProgressRepository.existsByUserIdAndLessonId(userId, lessonId);
         if (exists) {
-            throw new RuntimeException("Lesson progress already exists for user and lesson");
+            throw new BadRequestException("Lesson progress already exists for user and lesson");
         }
 
         LessonProgress lessonProgress = lessonProgressMapper.toEntity(request);
@@ -49,7 +50,7 @@ public class LessonProgressServiceImpl implements LessonProgressService {
     @Override
     public LessonProgressResponse update(Long id, LessonProgressRequest request) {
         LessonProgress lessonProgress = lessonProgressRepository
-                .findById(id).orElseThrow(() -> new RuntimeException("Lesson progress not found with ID: " + id));
+                .findById(id).orElseThrow(() -> new BadRequestException("Lesson progress not found with ID: " + id));
 
         lessonProgressMapper.updateEntity(lessonProgress, request);
         LessonProgress entity = lessonProgressRepository.save(lessonProgress);
@@ -66,7 +67,7 @@ public class LessonProgressServiceImpl implements LessonProgressService {
     @Override
     public void delete(Long id) {
         LessonProgress lessonProgress = lessonProgressRepository
-                .findById(id).orElseThrow(() -> new RuntimeException("Lesson progress not found with ID: " + id));
+                .findById(id).orElseThrow(() -> new BadRequestException("Lesson progress not found with ID: " + id));
         lessonProgressRepository.deleteById(id);
     }
 }

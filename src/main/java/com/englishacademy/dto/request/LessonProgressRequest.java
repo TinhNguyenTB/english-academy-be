@@ -1,6 +1,7 @@
 package com.englishacademy.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,10 +13,10 @@ import java.time.LocalDateTime;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class LessonProgressRequest {
-    @NotBlank(message = "userId must not be blank")
+    @NotNull(message = "userId must not be null")
     Long userId;
 
-    @NotBlank(message = "lessonId must not be blank")
+    @NotNull(message = "lessonId must not be null")
     Long lessonId;
 
     Boolean isCompleted;
