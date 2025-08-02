@@ -57,7 +57,10 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     public Page<Topic> findByName(String name, Pageable pageable) {
-        return topicRepository.findByName(name, pageable);
+        if(!name.isBlank()){
+            return topicRepository.findByNameContainsIgnoreCase(name, pageable);
+        }
+        return topicRepository.findAll(pageable);
     }
 
 }

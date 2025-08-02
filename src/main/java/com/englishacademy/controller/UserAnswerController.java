@@ -3,18 +3,17 @@ package com.englishacademy.controller;
 import com.englishacademy.config.locale.Translator;
 import com.englishacademy.dto.request.UserAnswerRequestDTO;
 import com.englishacademy.dto.response.ResponseData;
-import com.englishacademy.entity.User;
 import com.englishacademy.entity.UserAnswer;
 import com.englishacademy.service.UserAnswerService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Validated
 @RestController
@@ -46,7 +45,7 @@ public class UserAnswerController {
                 .build();
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public ResponseData<Void> updateUserAnswer(@PathVariable Long id, @Valid @RequestBody UserAnswerRequestDTO userAnswerRequestDTO) {
         userAnswerService.updateUserAnswer(id, userAnswerRequestDTO);
         return ResponseData.<Void>builder()
@@ -55,7 +54,7 @@ public class UserAnswerController {
                 .build();
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseData<Void> deleteUserAnswer(@PathVariable Long id) {
         userAnswerService.deleteUserAnswer(id);
         return ResponseData.<Void>builder()
@@ -108,8 +107,8 @@ public class UserAnswerController {
     public ResponseData<Page<UserAnswer>>  getUserAnswerByAnsweredAtBetween(@RequestParam String start, @RequestParam String end,
                                                              Pageable pageable) {
        try{
-           Timestamp startTimestamp = Timestamp.valueOf(start);
-           Timestamp endTimestamp = Timestamp.valueOf(end);
+           LocalDateTime startTimestamp = LocalDateTime.parse(start);
+           LocalDateTime endTimestamp = LocalDateTime.parse(end);
            Page<UserAnswer> userAnswers = userAnswerService.getUserAnswerByAnsweredAtBetween(startTimestamp, endTimestamp, pageable);
               return ResponseData.<Page<UserAnswer>>builder()
                      .message(Translator.toLocale("user.answer.find.by.answeredat.between"))
@@ -144,18 +143,8 @@ public class UserAnswerController {
 
     }
 
-    @GetMapping("/find")
-    public ResponseData<UserAnswer> findByUserIdAndQuestionId(@NotNull @RequestParam Long userId,@NotNull @RequestParam Long questionId) {
-        UserAnswer userAnswer = userAnswerService.findByUserIdAndQuestionId(userId, questionId);
-        return ResponseData.<UserAnswer>builder()
-                .message(Translator.toLocale("user.answer.find.by.user.id.and.question.id"))
-                .data(userAnswer)
-                .code(HttpStatus.OK.value())
-                .build();
-    }
-
     @GetMapping("/selected-answer")
-    public ResponseData<Page<UserAnswer>> getUserAnswerBySelectedAnswer(@NotNull @RequestParam String selectedAnswer, Pageable pageable) {
+    public ResponseData<Page<UserAnswer>> getUserAnswerBySelectedAnswer(@NotBlank @RequestParam String selectedAnswer, Pageable pageable) {
         Page<UserAnswer>  userAnswers =  userAnswerService.getUserAnswerBySelectedAnswer(selectedAnswer, pageable);
         return ResponseData.<Page<UserAnswer>>builder()
                 .message(Translator.toLocale("user.answer.find.by.selected.answer.success"))

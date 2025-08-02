@@ -4,8 +4,7 @@ import com.englishacademy.entity.UserAnswer;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 public interface UserAnswerRepository extends JpaRepository<UserAnswer, Long> {
 
@@ -19,7 +18,7 @@ public interface UserAnswerRepository extends JpaRepository<UserAnswer, Long> {
 
     Page<UserAnswer> findAllByIsCorrect(boolean Correct, Pageable pageable);
 
-    Page<UserAnswer> findAllByAnsweredAtBetween(Timestamp start, Timestamp end, Pageable pageable);
+    Page<UserAnswer> findAllByAnsweredAtBetween(LocalDateTime start, LocalDateTime end, Pageable pageable);
 
     Page<UserAnswer> findAllByUserIdAndIsCorrect(Long userId, boolean Correct, Pageable pageable);
 

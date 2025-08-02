@@ -47,7 +47,7 @@ public class QuestionController {
                 .build();
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public ResponseData<Question> updateQuestion(@PathVariable Long id, @Valid @RequestBody QuestionRequestDTO question) {
         Question q = questionService.updateQuestion(id, question);
         return ResponseData.<Question>builder()
@@ -57,7 +57,7 @@ public class QuestionController {
                 .build();
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseData<Void> deleteQuestion(@PathVariable Long id) {
         questionService.deleteQuestion(id);
         return ResponseData.<Void>builder()

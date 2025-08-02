@@ -5,8 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor
@@ -34,6 +33,6 @@ public class UserAnswer {
     private boolean isCorrect;
 
     @Column(name = "answered_at", nullable = false)
-    private Timestamp answeredAt;
+    private LocalDateTime answeredAt;
 
 }

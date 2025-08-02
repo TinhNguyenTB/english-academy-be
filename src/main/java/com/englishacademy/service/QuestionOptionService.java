@@ -14,7 +14,7 @@ public interface QuestionOptionService {
 
     Page<QuestionOption> getAllQuestionOptions(Pageable pageable);
 
-    Page<QuestionOption> getQuestionOptionsByQuestionId(Long questionId, Pageable pageable);
+    QuestionOption getQuestionOptionsByQuestionId(Long questionId);
 
     Page<QuestionOption> getQuestionOptionsByIsCorrect(Boolean isCorrect, Pageable pageable);
 
