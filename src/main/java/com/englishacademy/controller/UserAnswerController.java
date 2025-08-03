@@ -1,5 +1,6 @@
 package com.englishacademy.controller;
 
+import com.englishacademy.annotation.LogExcutime;
 import com.englishacademy.config.locale.Translator;
 import com.englishacademy.dto.request.UserAnswerRequestDTO;
 import com.englishacademy.dto.response.ResponseData;
@@ -26,6 +27,7 @@ public class UserAnswerController {
         this.userAnswerService = userAnswerService;
     }
 
+    @LogExcutime
     @GetMapping("/get")
     public ResponseData<Page<UserAnswer>> getAllUserAnswers(Pageable pageable) {
         Page<UserAnswer> userAnswers = userAnswerService.getAllUserAnswers(pageable);
