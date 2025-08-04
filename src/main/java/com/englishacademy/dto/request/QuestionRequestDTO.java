@@ -1,5 +1,6 @@
 package com.englishacademy.dto.request;
 
+import com.englishacademy.annotation.MeaningText;
 import com.englishacademy.enums.OptionType;
 import com.englishacademy.enums.QuestionType;
 import jakarta.validation.constraints.NotBlank;
@@ -28,6 +29,7 @@ public class QuestionRequestDTO {
     @Size(max = 300, message = "{question.mediaUrl.size.limit}")
     private String mediaUrl;
 
+    @MeaningText
     @Size(max = 500, message = "{question.explanation.size.limit}")
     private String explanation;
 }
