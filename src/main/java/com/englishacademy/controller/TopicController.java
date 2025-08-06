@@ -3,6 +3,7 @@ package com.englishacademy.controller;
 import com.englishacademy.config.locale.Translator;
 import com.englishacademy.dto.request.TopicRequestDTO;
 import com.englishacademy.dto.response.ResponseData;
+import com.englishacademy.dto.response.TopicResponseDTO;
 import com.englishacademy.entity.Topic;
 import com.englishacademy.service.TopicService;
 import jakarta.validation.Valid;
@@ -24,9 +25,9 @@ public class TopicController {
     }
 
     @GetMapping("/get")
-    public ResponseData<Page<Topic>> getAllTopics(Pageable pageable) {
-        Page<Topic> topics = topicService.getAllTopics(pageable);
-        return ResponseData.<Page<Topic>>builder()
+    public ResponseData<Page<TopicResponseDTO>> getAllTopics(Pageable pageable) {
+        Page<TopicResponseDTO> topics = topicService.getAllTopics(pageable);
+        return ResponseData.<Page<TopicResponseDTO>>builder()
                 .message(Translator.toLocale("topic.get.all.success"))
                 .data(topics)
                 .code(HttpStatus.OK.value())
@@ -34,9 +35,9 @@ public class TopicController {
     }
 
     @GetMapping("/{id}")
-    public ResponseData<Topic>  getTopicById(@PathVariable Long id) {
-        Topic topic = topicService.getTopicById(id);
-        return ResponseData.<Topic>builder()
+    public ResponseData<TopicResponseDTO>  getTopicById(@PathVariable Long id) {
+        TopicResponseDTO topic = topicService.getTopicById(id);
+        return ResponseData.<TopicResponseDTO>builder()
                 .message(Translator.toLocale("topic.get.topic.by.id.success"))
                 .data(topic)
                 .code(HttpStatus.OK.value())
@@ -44,20 +45,22 @@ public class TopicController {
     }
 
     @PostMapping("/create")
-    public ResponseData<Void> createTopic(@Valid  @RequestBody TopicRequestDTO topicRequestDTO) {
-        topicService.createTopic(topicRequestDTO);
-        return ResponseData.<Void>builder()
+    public ResponseData<TopicResponseDTO> createTopic(@Valid  @RequestBody TopicRequestDTO topicRequestDTO) {
+        TopicResponseDTO topicCreate  = topicService.createTopic(topicRequestDTO);
+        return ResponseData.<TopicResponseDTO>builder()
                 .message(Translator.toLocale("topic.create.success"))
                 .code(HttpStatus.CREATED.value())
+                .data(topicCreate)
                 .build();
     }
 
     @PutMapping("/{id}")
-    public ResponseData<Void> updateTopic(@PathVariable Long id, @Valid @RequestBody TopicRequestDTO topicRequestDTO) {
-        topicService.updateTopic(id, topicRequestDTO);
-        return ResponseData.<Void>builder()
+    public ResponseData<TopicResponseDTO> updateTopic(@PathVariable Long id, @Valid @RequestBody TopicRequestDTO topicRequestDTO) {
+        TopicResponseDTO topicUpdate = topicService.updateTopic(id, topicRequestDTO);
+        return ResponseData.<TopicResponseDTO>builder()
                 .message(Translator.toLocale("topic.update.success"))
                 .code(HttpStatus.OK.value())
+                .data(topicUpdate)
                 .build();
     }
 
@@ -80,9 +83,9 @@ public class TopicController {
     }
 
     @GetMapping("/find")
-    public ResponseData<Page<Topic>> findByName(@RequestParam String name, Pageable pageable) {
-        Page<Topic> topics = topicService.findByName(name, pageable);
-        return ResponseData.<Page<Topic>>builder()
+    public ResponseData<Page<TopicResponseDTO>> findByName(@RequestParam String name, Pageable pageable) {
+        Page<TopicResponseDTO> topics = topicService.findByName(name, pageable);
+        return ResponseData.<Page<TopicResponseDTO>>builder()
                 .message(Translator.toLocale("topic.find.by.name.success"))
                 .data(topics)
                 .code(HttpStatus.OK.value())
