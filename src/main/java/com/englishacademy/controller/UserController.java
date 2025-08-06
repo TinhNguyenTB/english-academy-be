@@ -30,10 +30,12 @@ public class UserController {
 
     @GetMapping
     public ResponseData<Page<UserResponse>> getAllUsers(
-            @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.ASC)
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String email,
+            @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
-        Page<UserResponse> users = userService.getAllUsers(pageable);
+        Page<UserResponse> users = userService.getAllUsers(name, email,pageable);
 
         return ResponseData.<Page<UserResponse>>builder()
                 .data(users)
