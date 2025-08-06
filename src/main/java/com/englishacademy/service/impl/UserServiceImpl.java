@@ -24,9 +24,20 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public Page<UserResponse> getAllUsers(Pageable pageable) {
-        return userRepository.findAll(pageable)
-                .map(userMapper::toUserResponse);
+    public Page<UserResponse> getAllUsers(String name, String email, Pageable pageable) {
+        Page<User> users;
+
+        if (name != null && !name.isBlank() && email != null && !email.isBlank()) {
+            users = userRepository.findByNameContainingIgnoreCaseAndEmailContainingIgnoreCase(name, email, pageable);
+        } else if (name != null && !name.isBlank()) {
+            users = userRepository.findByNameContainingIgnoreCase(name, pageable);
+        } else if (email != null && !email.isBlank()) {
+            users = userRepository.findByEmailContainingIgnoreCase(email, pageable);
+        } else {
+            users = userRepository.findAll(pageable);
+        }
+
+        return users.map(userMapper::toUserResponse);
     }
 
     @Override
