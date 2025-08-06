@@ -1,6 +1,7 @@
 package com.englishacademy.mapper;
 
 import com.englishacademy.dto.request.TopicRequestDTO;
+import com.englishacademy.dto.response.TopicResponseDTO;
 import com.englishacademy.entity.Topic;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
@@ -17,4 +18,5 @@ public interface TopicMapper {
 
     void updateEntityFromDto(TopicRequestDTO topicRequestDTO, @MappingTarget Topic topic);
 
+    TopicResponseDTO toResponseDTO(Topic topic);
 }
