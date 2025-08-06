@@ -1,6 +1,7 @@
 package com.englishacademy.service;
 
 import com.englishacademy.dto.request.TopicRequestDTO;
+import com.englishacademy.dto.response.TopicResponseDTO;
 import com.englishacademy.entity.Topic;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,17 +11,17 @@ import java.util.List;
 
 
 public interface TopicService {
-     Page<Topic> getAllTopics(Pageable pageable);
+     Page<TopicResponseDTO> getAllTopics(Pageable pageable);
 
-     Topic getTopicById(Long id);
+     TopicResponseDTO getTopicById(Long id);
 
-     void createTopic(TopicRequestDTO topic);
+     TopicResponseDTO createTopic(TopicRequestDTO topic);
 
-     void updateTopic(Long id, TopicRequestDTO topic);
+     TopicResponseDTO updateTopic(Long id, TopicRequestDTO topic);
 
      void deleteTopicById(Long id);
 
      void deleteTopics(List<Long> ids);
 
-     Page<Topic> findByName(String name, Pageable pageable);
+     Page<TopicResponseDTO> findByName(String name, Pageable pageable);
 }
