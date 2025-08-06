@@ -29,7 +29,6 @@ public class LessonProgress {
     Long lessonId;
 
     @Column(name = "is_completed")
-    @Builder.Default
     Boolean isCompleted = false;
 
     @Column(name = "completed_at")
