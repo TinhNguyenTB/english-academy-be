@@ -8,6 +8,8 @@ import com.englishacademy.repository.PermissionRepository;
 import com.englishacademy.service.PermissionService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,7 @@ public class PermissionServiceImpl implements PermissionService {
     PermissionRepository permissionRepository;
     PermissionMapper permissionMapper;
 
+    @CachePut(value = "PERMISSION_CACHE", key = "#result.name")
     @Override
     public PermissionResponse create(PermissionRequest request) {
         Permission permission = permissionMapper.toEntity(request);
@@ -35,6 +38,7 @@ public class PermissionServiceImpl implements PermissionService {
                 .map(permissionMapper::toResponse);
     }
 
+    @CacheEvict(value = "PERMISSION_CACHE", key = "#name")
     @Override
     public void delete(String name) {
         permissionRepository.deleteById(name);

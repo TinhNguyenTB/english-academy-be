@@ -10,6 +10,8 @@ import com.englishacademy.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.AccessLevel;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,7 @@ public class RoleServiceImpl implements RoleService {
     RoleMapper roleMapper;
     PermissionRepository permissionRepository;
 
+    @CachePut(value="ROLE_CACHE", key = "#result.name")
     @Override
     public RoleResponse create(RoleRequest request){
         Role role = roleMapper.toEntity(request);
@@ -43,6 +46,7 @@ public class RoleServiceImpl implements RoleService {
                 .map(roleMapper::toResponse);
     }
 
+    @CachePut(value = "ROLE_CACHE", key="#result.name")
     @Override
     public RoleResponse update(String name, RoleRequest request) {
         Role role = roleRepository.findById(name)
@@ -56,6 +60,7 @@ public class RoleServiceImpl implements RoleService {
         return roleMapper.toResponse(updated);
     }
 
+    @CacheEvict(value = "ROLE_CACHE", key = "#name")
     @Override
     public void delete(String name){
         roleRepository.deleteById(name);
