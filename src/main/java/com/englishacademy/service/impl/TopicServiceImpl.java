@@ -36,7 +36,6 @@ public class TopicServiceImpl implements TopicService {
     @Cacheable(value="TOPIC_CACHE", key = "#id")
     @Override
     public TopicResponseDTO getTopicById(Long id) {
-        log.info("chay vao DB query!");
         Topic topic = topicRepository.findById(id).get();
         return topicMapper.toResponseDTO(topic);
     }
@@ -44,7 +43,6 @@ public class TopicServiceImpl implements TopicService {
     @CachePut(value = "TOPIC_CACHE", key = "#result.id")
     @Override
     public TopicResponseDTO createTopic(TopicRequestDTO topicRequestDTO) {
-        log.info("chay vao DB query!");
         Topic topic = topicRepository.save(topicMapper.toEntity(topicRequestDTO));
         return topicMapper.toResponseDTO(topic);
     }
@@ -52,7 +50,6 @@ public class TopicServiceImpl implements TopicService {
     @CachePut(value = "TOPIC_CACHE", key = "#result.id")
     @Override
     public TopicResponseDTO updateTopic(Long id, TopicRequestDTO topic) {
-        log.info("chay vao DB query!");
         Topic oldTopic = topicRepository.findById(id).get();
         topicMapper.updateEntityFromDto(topic, oldTopic);
         Topic topicSave = topicRepository.save(oldTopic);
@@ -62,7 +59,6 @@ public class TopicServiceImpl implements TopicService {
     @CacheEvict(value="TOPIC_CACHE", key="#id")
     @Override
     public void deleteTopicById(Long id) {
-        log.info("chay vao DB query!");
         topicRepository.deleteById(id);
     }
 
