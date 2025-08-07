@@ -19,7 +19,7 @@ public class MeaningTextValidator implements ConstraintValidator<MeaningText, St
 
     @Override
     public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
-        if(s.isEmpty() || s == null){
+        if(s == null || s.isEmpty()){
             return true;
         }
 
@@ -32,14 +32,13 @@ public class MeaningTextValidator implements ConstraintValidator<MeaningText, St
         if(s.length() >= minLength){
             int numberDiffChars = 0;
             Set<Character> charSet = new HashSet<Character>();
-            for(int i = 0; i < mindiffChars; i++){
-                charSet.add(s.charAt(i));
-            }
-            numberDiffChars = charSet.size();
-            if(numberDiffChars < mindiffChars){
-                return false;
-            }
-            return true;
+           for(char c : s.toCharArray()){
+               charSet.add(c);
+           }
+           numberDiffChars = charSet.size();
+           if(numberDiffChars >= mindiffChars){
+               return true;
+           }
         }
         return false;
     }
