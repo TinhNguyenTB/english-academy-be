@@ -10,6 +10,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -26,7 +27,10 @@ public class AppConfig implements WebMvcConfigurer {
 
     @Override
     public void configurePathMatch(PathMatchConfigurer pathMatchConfigurer) {
-        pathMatchConfigurer.addPathPrefix(API_PREFIX, clazz -> true); // áp dụng cho tất cả controller
+        pathMatchConfigurer.addPathPrefix("/api/v1", clazz ->
+                clazz.isAnnotationPresent(RestController.class) &&
+                        clazz.getPackageName().startsWith("com.englishacademy.controller")
+        );
     }
 
     @Bean
