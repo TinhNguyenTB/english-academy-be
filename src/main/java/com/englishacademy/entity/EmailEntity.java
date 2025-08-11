@@ -38,12 +38,12 @@ public class EmailEntity {
     @Column(name="status")
     private EmailStatusEnum status;
 
-    @Column(name="retryNum")
+    @Column(name="retry_num")
     private int retryNum;
 
-    @Column(name="createAt")
+    @Column(name="create_at")
     private LocalDateTime createAt;
 
-    @Column(name="lastTryAt")
+    @Column(name="last_try_at")
     private LocalDateTime lastTryAt;
 }
