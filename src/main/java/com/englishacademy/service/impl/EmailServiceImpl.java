@@ -1,6 +1,7 @@
 package com.englishacademy.service.impl;
 
-import com.englishacademy.exception.BadRequestException;
+import com.englishacademy.dto.request.EmailMessageDTO;
+import com.englishacademy.service.EmailProducerKafka;
 import com.englishacademy.service.EmailService;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
@@ -9,20 +10,24 @@ import com.sendgrid.SendGrid;
 import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService {
+
+    private final EmailProducerKafka emailProducer;
 
     @Value("${SENDGRID_API_KEY}")
     private String sendGridKey;
 
-    @Async
     @Override
     public void sendEmail(String to, String subject, String content) {
         SendGrid sendGrid = new SendGrid(sendGridKey);
@@ -37,16 +42,15 @@ public class EmailServiceImpl implements EmailService {
             request.setMethod(Method.POST);
             request.setEndpoint("mail/send");
             request.setBody(mail.build());
-
             Response response = sendGrid.api(request);
-            log.info("HTTP STATUS CODE: " + response.getStatusCode());
-            log.info(request.getBody());
             if (response.getStatusCode() != 202) {
-                log.error("Failed to send email to {}. Status: {}, Response: {}", to, response.getStatusCode(), response.getBody());
-                throw new RuntimeException("SendGrid error: " + response.getBody());
+               log.error("Error sending email to Kafka");
+               EmailMessageDTO emailMessageDTO = new EmailMessageDTO(to, subject, content, 0, LocalDateTime.now(), LocalDateTime.now());
+               emailProducer.sendEmailToKafka(emailMessageDTO);
             }
         } catch (IOException e) {
-            throw new BadRequestException(e.getMessage());
+            EmailMessageDTO emailMessageDTO = new EmailMessageDTO(to, subject, content, 0, LocalDateTime.now(), LocalDateTime.now());
+            emailProducer.sendEmailToKafka(emailMessageDTO);
         }
     }
 }
