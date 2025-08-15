@@ -1,6 +1,7 @@
 package com.englishacademy.service.impl;
 
 import com.englishacademy.dto.request.EmailMessageDTO;
+import com.englishacademy.exception.BadRequestException;
 import com.englishacademy.service.EmailProducerKafka;
 import com.englishacademy.service.EmailService;
 import com.sendgrid.Method;
@@ -44,13 +45,10 @@ public class EmailServiceImpl implements EmailService {
             request.setBody(mail.build());
             Response response = sendGrid.api(request);
             if (response.getStatusCode() != 202) {
-               log.error("Error sending email to Kafka");
-               EmailMessageDTO emailMessageDTO = new EmailMessageDTO(to, subject, content, 0, LocalDateTime.now(), LocalDateTime.now());
-               emailProducer.sendEmailToKafka(emailMessageDTO);
+                throw new BadRequestException("SendGrid Status: " + response.getStatusCode());
             }
         } catch (IOException e) {
-            EmailMessageDTO emailMessageDTO = new EmailMessageDTO(to, subject, content, 0, LocalDateTime.now(), LocalDateTime.now());
-            emailProducer.sendEmailToKafka(emailMessageDTO);
+                throw new BadRequestException("SendGrid Error: " + e.getMessage());
         }
     }
 }

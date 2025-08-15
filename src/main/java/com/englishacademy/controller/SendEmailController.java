@@ -1,8 +1,10 @@
 package com.englishacademy.controller;
 
 import com.englishacademy.config.locale.Translator;
+import com.englishacademy.dto.request.EmailMessageDTO;
 import com.englishacademy.dto.response.ResponseData;
 import com.englishacademy.exception.BadRequestException;
+import com.englishacademy.service.EmailProducerKafka;
 import com.englishacademy.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -19,6 +22,7 @@ public class SendEmailController {
 
     private final EmailService emailService;
     private final TemplateEngine templateEngine;
+    private final EmailProducerKafka emailProducer;
 
     @PostMapping("/send-welcome")
     public ResponseData<String> welcome(@RequestBody List<String> emailList ) {
@@ -30,7 +34,8 @@ public class SendEmailController {
         String subject = "Chào mừng đến với English Academy";
 
         for(String email : emailList) {
-            emailService.sendEmail(email, subject, content);
+            EmailMessageDTO dto = new EmailMessageDTO(email, subject, content, 0, LocalDateTime.now(), LocalDateTime.now());
+            emailProducer.sendEmailToKafka(dto);
         }
 
         return ResponseData.<String>builder()
