@@ -1,6 +1,9 @@
 package com.englishacademy.service.impl;
 
 import com.englishacademy.dto.request.EmailMessageDTO;
+import com.englishacademy.entity.FailedEmail;
+import com.englishacademy.mapper.EmailMapper;
+import com.englishacademy.repository.FailedEmailRepository;
 import com.englishacademy.service.EmailConsumerKafka;
 import com.englishacademy.service.EmailProducerKafka;
 import com.englishacademy.service.EmailService;
@@ -15,6 +18,8 @@ public class EmailConsumerKafkaImpl implements EmailConsumerKafka {
     private final EmailService emailService;
     private final EmailProducerKafka emailProducerKafka;
     private static final int retryMaxNumber = 5;
+    private final EmailMapper emailMapper;
+    private final FailedEmailRepository failedEmailRepository;
 
     @KafkaListener(topics = "email-retry-topic", groupId = "email-group")
     @Override
@@ -24,6 +29,7 @@ public class EmailConsumerKafkaImpl implements EmailConsumerKafka {
         }catch (Exception e){
             int currentRetryNumber = emailMessageDTO.getRetryNumber();
             if (currentRetryNumber < retryMaxNumber) {
+                System.out.println("========== log RETRY number " + currentRetryNumber + " ==========");
                 emailMessageDTO.setRetryNumber(currentRetryNumber + 1);
                 emailProducerKafka.sendEmailToKafka(emailMessageDTO);
             }else{
@@ -35,6 +41,7 @@ public class EmailConsumerKafkaImpl implements EmailConsumerKafka {
     @KafkaListener(topics = "email-retry-dlt-topic", groupId = "email-group")
     @Override
     public void consumeEmailDLT(EmailMessageDTO emailMessageDTO) {
-
+        FailedEmail failedEmail = emailMapper.toEntity(emailMessageDTO);
+        failedEmailRepository.save(failedEmail);
     }
 }
