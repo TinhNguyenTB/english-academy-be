@@ -4,6 +4,7 @@ import com.englishacademy.dto.request.UserRequest;
 import com.englishacademy.dto.response.UserResponse;
 import com.englishacademy.entity.Role;
 import com.englishacademy.entity.User;
+import com.englishacademy.exception.BadRequestException;
 import com.englishacademy.mapper.UserMapper;
 import com.englishacademy.repository.RoleRepository;
 import com.englishacademy.repository.UserRepository;
@@ -46,7 +47,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
 
         Role role = roleRepository.findByName("USER")
-                .orElseThrow(() -> new RuntimeException("Role USER not found"));
+                .orElseThrow(() -> new BadRequestException("Role USER not found"));
 
         user.setRole(role);
         User savedUser = userRepository.save(user);
@@ -56,13 +57,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse updateUser(Long id, UserRequest dto) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new BadRequestException("User not found"));
 
-        userMapper.updateUser(user, dto);
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setName(dto.getName());
+        user.setEmail(dto.getEmail());
+        user.setAvatarUrl(dto.getAvatarUrl());
 
         Role role = roleRepository.findByName(dto.getRole())
-                .orElseThrow(() -> new RuntimeException("Role not found: " + dto.getRole()));
+                .orElseThrow(() -> new BadRequestException("Role not found: " + dto.getRole()));
 
         user.setRole(role);
         User updatedUser = userRepository.save(user);
@@ -72,14 +74,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse getUserById(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new BadRequestException("User not found"));
         return userMapper.toUserResponse(user);
     }
 
     @Override
     public void deleteUser(Long id) {
         if (!userRepository.existsById(id)) {
-            throw new RuntimeException("User not found");
+            throw new BadRequestException("User not found");
         }
         userRepository.deleteById(id);
     }
