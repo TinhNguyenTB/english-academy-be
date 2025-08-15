@@ -1,30 +1,29 @@
 package com.englishacademy.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "users")
+@Table(name = "user_flashcards")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
-public class User {
+public class UserFlashcard {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    String name;
-    String email;
-    String password;
+    @Column(name = "user_id")
+    Long userId;
 
-    @Column(name = "avatar_url")
-    String avatarUrl;
+    @Column(name = "word_id")
+    Long wordId;
 
     @Column(name = "created_at", updatable = false)
     LocalDateTime createdAt;
@@ -46,8 +45,4 @@ public class User {
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
-
-    @ManyToOne
-    @JoinColumn(name = "role") // tên cột trong bảng users
-    Role role;
 }
