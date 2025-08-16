@@ -1,7 +1,10 @@
 package com.englishacademy.service.impl;
 
 import com.englishacademy.dto.request.EmailMessageDTO;
+import com.englishacademy.entity.FailedEmail;
 import com.englishacademy.exception.BadRequestException;
+import com.englishacademy.mapper.EmailMapper;
+import com.englishacademy.repository.FailedEmailRepository;
 import com.englishacademy.service.EmailProducerKafka;
 import com.englishacademy.service.EmailService;
 import com.sendgrid.Method;
@@ -18,6 +21,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -25,6 +30,8 @@ import java.time.LocalDateTime;
 public class EmailServiceImpl implements EmailService {
 
     private final EmailProducerKafka emailProducer;
+    private final FailedEmailRepository failedEmailRepository;
+    private final EmailMapper emailMapper;
 
     @Value("${SENDGRID_API_KEY}")
     private String sendGridKey;
@@ -45,10 +52,62 @@ public class EmailServiceImpl implements EmailService {
             request.setBody(mail.build());
             Response response = sendGrid.api(request);
             if (response.getStatusCode() != 202) {
-                throw new BadRequestException("SendGrid Status: " + response.getStatusCode());
+
+                EmailMessageDTO emailMessageDTO = new EmailMessageDTO();
+                emailMessageDTO.setTo(to);
+                emailMessageDTO.setSubject(subject);
+                emailMessageDTO.setBody(content);
+                emailMessageDTO.setRetryNumber(1);
+                emailMessageDTO.setLastRetryTime(LocalDateTime.now());
+                emailMessageDTO.setCreateAt(LocalDateTime.now());
+
+                try{
+                    emailProducer.sendEmailToKafka(emailMessageDTO);
+                }catch (Exception e){
+                    failedEmailRepository.save(emailMapper.toEntity(emailMessageDTO));
+                }
             }
         } catch (IOException e) {
-                throw new BadRequestException("SendGrid Error: " + e.getMessage());
+            EmailMessageDTO emailMessageDTO = new EmailMessageDTO();
+            emailMessageDTO.setTo(to);
+            emailMessageDTO.setSubject(subject);
+            emailMessageDTO.setBody(content);
+            emailMessageDTO.setRetryNumber(1);
+            emailMessageDTO.setLastRetryTime(LocalDateTime.now());
+            emailMessageDTO.setCreateAt(LocalDateTime.now());
+
+            try{
+                emailProducer.sendEmailToKafka(emailMessageDTO);
+            }catch (Exception eX){
+                failedEmailRepository.save(emailMapper.toEntity(emailMessageDTO));
+            }
+        }
+    }
+
+    @Override
+    public void handleWebhookEvents(List<Map<String, Object>> events) {
+        for (Map<String, Object> event : events) {
+            String emailTo = (String) event.get("email");
+            String subject = (String) event.getOrDefault("subject", "");
+            String body = (String) event.getOrDefault("body", "");
+            String eventType = (String) event.get("event");
+
+            if ("bounce".equals(eventType) || "drop".equals(eventType) || "spamreport".equals(eventType)) {
+                EmailMessageDTO emailMessageDTO = new EmailMessageDTO();
+                emailMessageDTO.setTo(emailTo);
+                emailMessageDTO.setSubject(subject);
+                emailMessageDTO.setBody(body);
+                emailMessageDTO.setRetryNumber(1);
+                emailMessageDTO.setLastRetryTime(LocalDateTime.now());
+                emailMessageDTO.setCreateAt(LocalDateTime.now());
+
+                try{
+                    emailProducer.sendEmailToKafka(emailMessageDTO);
+                }catch (Exception e){
+                    failedEmailRepository.save(emailMapper.toEntity(emailMessageDTO));
+                }
+
+            }
         }
     }
 }
