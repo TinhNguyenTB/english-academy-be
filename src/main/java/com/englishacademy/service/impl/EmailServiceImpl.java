@@ -22,12 +22,16 @@ public class EmailServiceImpl implements EmailService {
     @Value("${SENDGRID_API_KEY}")
     private String sendGridKey;
 
+
+    @Value("${SENDGRID_FROM_EMAIL}")
+    private String fromEmail;
+
     @Async
     @Override
     public void sendEmail(String to, String subject, String content) {
         SendGrid sendGrid = new SendGrid(sendGridKey);
 
-        Email from = new Email("phamxuanhoanglong@gmail.com");
+        Email from = new Email(fromEmail);
         Email toEmail = new Email(to);
         String subjectEmail = subject;
         Content contentEmail = new Content("text/html", content);
