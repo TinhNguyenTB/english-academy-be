@@ -12,19 +12,19 @@ import lombok.experimental.FieldDefaults;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class WordRequest {
-    @NotNull(message = "topicId must not be null")
-    @Min(value = 1, message = "topicId must be greater than or equal to 1")
+    @NotNull(message = "{word.topicId.not.null}")
+    @Min(value = 1, message = "{word.topicId.must.be.greater.than.or.equal.to.one}")
     Long topicId;
 
-    @NotBlank(message = "word must not be blank")
+    @NotBlank(message = "{word.not.be.blank}")
     String word;
 
-    @NotBlank(message = "meaning must not be blank")
+    @NotBlank(message = "{word.meaning.not.be.blank}")
     String meaning;
 
     String example;
 
-    @NotBlank(message = "pronunciation must not be blank")
+    @NotBlank(message = "{word.pronunciation.not.be.blank}")
     String pronunciation;
 
     String audioUrl;
