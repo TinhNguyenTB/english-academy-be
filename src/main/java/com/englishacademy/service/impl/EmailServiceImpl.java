@@ -5,6 +5,7 @@ import com.englishacademy.mapper.EmailMapper;
 import com.englishacademy.repository.FailedEmailRepository;
 import com.englishacademy.service.EmailProducerKafka;
 import com.englishacademy.service.EmailService;
+import com.englishacademy.utils.EmailUtils;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.Response;
@@ -29,6 +30,7 @@ public class EmailServiceImpl implements EmailService {
     private final EmailProducerKafka emailProducer;
     private final FailedEmailRepository failedEmailRepository;
     private final EmailMapper emailMapper;
+    private final EmailUtils emailUtils;
 
     @Value("${SENDGRID_API_KEY}")
     private String sendGridKey;
@@ -36,27 +38,11 @@ public class EmailServiceImpl implements EmailService {
     @Value("${SENDGRID_FROM_EMAIL}")
     private String fromEmail;
 
-    private boolean isValidEmail(String email) {
-        if (email == null) return false;
-        return email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$");
-    }
-    private void saveFailedEmail(String to, String subject, String content) {
-        EmailMessageDTO emailMessageDTO = new EmailMessageDTO();
-        emailMessageDTO.setTo(to);
-        emailMessageDTO.setSubject(subject);
-        emailMessageDTO.setBody(content);
-        emailMessageDTO.setRetryNumber(0);
-        emailMessageDTO.setCreateAt(LocalDateTime.now());
-        emailMessageDTO.setLastRetryTime(LocalDateTime.now());
-
-        failedEmailRepository.save(emailMapper.toEntity(emailMessageDTO));
-        log.info("Saved failed email to DB: {} (reason: {})", to);
-    }
     @Override
     public void sendEmail(String to, String subject, String content) {
-        if (!isValidEmail(to)) {
+        if (!emailUtils.isValidEmail(to)) {
             log.warn("Invalid email format: {}", to);
-            saveFailedEmail(to, subject, content);
+            emailUtils.saveFailedEmail(to, subject, content);
             return;
         }
 
