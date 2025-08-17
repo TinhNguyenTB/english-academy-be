@@ -13,10 +13,10 @@ import java.time.LocalDateTime;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class LessonProgressRequest {
-    @NotNull(message = "userId must not be null")
+    @NotNull(message = "{lesson.progress.userId.not.null}")
     Long userId;
 
-    @NotNull(message = "lessonId must not be null")
+    @NotNull(message = "{lesson.progress.lessonId.not.null}")
     Long lessonId;
 
     Boolean isCompleted;
