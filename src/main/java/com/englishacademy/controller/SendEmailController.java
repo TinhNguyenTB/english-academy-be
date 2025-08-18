@@ -1,17 +1,24 @@
 package com.englishacademy.controller;
 
 import com.englishacademy.config.locale.Translator;
+import com.englishacademy.dto.request.EmailMessageDTO;
 import com.englishacademy.dto.response.ResponseData;
+import com.englishacademy.entity.FailedEmail;
 import com.englishacademy.exception.BadRequestException;
+import com.englishacademy.service.EmailProducerKafka;
 import com.englishacademy.service.EmailService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import java.time.LocalDateTime;
 import java.util.List;
-
+import java.util.Map;
+@Log4j2
 @RestController
 @RequestMapping("email")
 @RequiredArgsConstructor
@@ -19,6 +26,7 @@ public class SendEmailController {
 
     private final EmailService emailService;
     private final TemplateEngine templateEngine;
+    private final EmailProducerKafka emailProducer;
 
     @PostMapping("/send-welcome")
     public ResponseData<String> welcome(@RequestBody List<String> emailList ) {
@@ -30,12 +38,20 @@ public class SendEmailController {
         String subject = "Chào mừng đến với English Academy";
 
         for(String email : emailList) {
-            emailService.sendEmail(email, subject, content);
+            EmailMessageDTO dto = new EmailMessageDTO(email, subject, content, 0, LocalDateTime.now(), LocalDateTime.now());
+            emailProducer.sendEmailToKafka(dto);
         }
 
         return ResponseData.<String>builder()
               .message(Translator.toLocale("email.send.success"))
               .code(HttpStatus.OK.value())
               .build();
+    }
+
+    @PostMapping("/webhook")
+    public ResponseEntity<Void> receiveWebhook(@RequestBody List<Map<String, Object>> events) {
+        log.info("Received webhook: {}", events);
+        emailService.handleWebhookEvents(events);
+        return ResponseEntity.ok().build();
     }
 }

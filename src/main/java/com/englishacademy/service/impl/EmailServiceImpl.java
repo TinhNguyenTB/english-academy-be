@@ -1,9 +1,11 @@
 package com.englishacademy.service.impl;
 
-import com.englishacademy.entity.EmailEntity;
-import com.englishacademy.enums.EmailStatusEnum;
-import com.englishacademy.repository.EmailRepository;
+import com.englishacademy.dto.request.EmailMessageDTO;
+import com.englishacademy.mapper.EmailMapper;
+import com.englishacademy.repository.FailedEmailRepository;
+import com.englishacademy.service.EmailProducerKafka;
 import com.englishacademy.service.EmailService;
+import com.englishacademy.utils.EmailUtils;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.Response;
@@ -14,75 +16,106 @@ import com.sendgrid.helpers.mail.objects.Email;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService {
 
-    private final EmailRepository emailRepository;
+    private final EmailProducerKafka emailProducer;
+    private final FailedEmailRepository failedEmailRepository;
+    private final EmailMapper emailMapper;
+    private final EmailUtils emailUtils;
 
     @Value("${SENDGRID_API_KEY}")
     private String sendGridKey;
 
-    @Async
+    @Value("${SENDGRID_FROM_EMAIL}")
+    private String fromEmail;
+
     @Override
     public void sendEmail(String to, String subject, String content) {
+        if (!emailUtils.isValidEmail(to)) {
+            log.warn("Invalid email format: {}", to);
+            emailUtils.saveFailedEmail(to, subject, content);
+            return;
+        }
 
-        EmailEntity emailEntity = new EmailEntity();
-        emailEntity.setFrom("phamxuanhoanglong@gmail.com");
-        emailEntity.setTo(to);
-        emailEntity.setSubject(subject);
-        emailEntity.setContent(content);
-        emailEntity.setStatus(EmailStatusEnum.PENDING);
-        emailEntity.setRetryNum(0);
-        emailEntity.setCreateAt(LocalDateTime.now());
-
-        emailRepository.save(emailEntity);
-    }
-
-    @Override
-    public void sendEmailGrid(EmailEntity emailEntity) {
         SendGrid sendGrid = new SendGrid(sendGridKey);
 
-        Email from = new Email(emailEntity.getFrom());
-        Email toEmail = new Email(emailEntity.getTo());
-        String subjectEmail = emailEntity.getSubject();
-        Content contentEmail = new Content("text/html", emailEntity.getContent());
+        Email from = new Email(fromEmail);
+        Email toEmail = new Email(to);
+        String subjectEmail = subject;
+        Content contentEmail = new Content("text/html", content);
         Mail mail = new Mail(from, subjectEmail, toEmail, contentEmail);
         try {
             Request request = new Request();
             request.setMethod(Method.POST);
             request.setEndpoint("mail/send");
             request.setBody(mail.build());
-
             Response response = sendGrid.api(request);
-            log.info("HTTP STATUS CODE: " + response.getStatusCode());
-            log.info(request.getBody());
             if (response.getStatusCode() != 202) {
-                emailEntity.setRetryNum(emailEntity.getRetryNum() + 1);
-                if (emailEntity.getRetryNum() >= 5) {
-                    emailEntity.setStatus(EmailStatusEnum.FAILED_PERMANENT);
-                } else {
-                    emailEntity.setStatus(EmailStatusEnum.FAILED);
+
+                EmailMessageDTO emailMessageDTO = new EmailMessageDTO();
+                emailMessageDTO.setTo(to);
+                emailMessageDTO.setSubject(subject);
+                emailMessageDTO.setBody(content);
+                emailMessageDTO.setRetryNumber(1);
+                emailMessageDTO.setLastRetryTime(LocalDateTime.now());
+                emailMessageDTO.setCreateAt(LocalDateTime.now());
+
+                try{
+                    emailProducer.sendEmailToKafka(emailMessageDTO);
+                }catch (Exception e){
+                    failedEmailRepository.save(emailMapper.toEntity(emailMessageDTO));
                 }
-                log.error("Failed to send email to {}. Status: {}, Response: {}", emailEntity.getTo(), response.getStatusCode(), response.getBody());
-            }else{
-                emailEntity.setStatus(EmailStatusEnum.SUCCESS);
             }
         } catch (IOException e) {
-            log.error("Failed to send email to {}", emailEntity.getTo(), e.getMessage());
-            emailEntity.setStatus(EmailStatusEnum.FAILED);
-            emailEntity.setRetryNum(emailEntity.getRetryNum() + 1);
-            if(emailEntity.getRetryNum() >= 5){
-                emailEntity.setStatus(EmailStatusEnum.FAILED_PERMANENT);
+            EmailMessageDTO emailMessageDTO = new EmailMessageDTO();
+            emailMessageDTO.setTo(to);
+            emailMessageDTO.setSubject(subject);
+            emailMessageDTO.setBody(content);
+            emailMessageDTO.setRetryNumber(1);
+            emailMessageDTO.setLastRetryTime(LocalDateTime.now());
+            emailMessageDTO.setCreateAt(LocalDateTime.now());
+
+            try{
+                emailProducer.sendEmailToKafka(emailMessageDTO);
+            }catch (Exception eX){
+                failedEmailRepository.save(emailMapper.toEntity(emailMessageDTO));
             }
         }
-        emailEntity.setLastTryAt(LocalDateTime.now());
-        emailRepository.save(emailEntity);
+    }
+
+    @Override
+    public void handleWebhookEvents(List<Map<String, Object>> events) {
+        for (Map<String, Object> event : events) {
+            String emailTo = (String) event.get("email");
+            String subject = (String) event.getOrDefault("subject", "");
+            String body = (String) event.getOrDefault("body", "");
+            String eventType = (String) event.get("event");
+
+            if ("bounce".equals(eventType) || "drop".equals(eventType) || "spamreport".equals(eventType)) {
+                EmailMessageDTO emailMessageDTO = new EmailMessageDTO();
+                emailMessageDTO.setTo(emailTo);
+                emailMessageDTO.setSubject(subject);
+                emailMessageDTO.setBody(body);
+                emailMessageDTO.setRetryNumber(1);
+                emailMessageDTO.setLastRetryTime(LocalDateTime.now());
+                emailMessageDTO.setCreateAt(LocalDateTime.now());
+
+                try{
+                    emailProducer.sendEmailToKafka(emailMessageDTO);
+                }catch (Exception e){
+                    failedEmailRepository.save(emailMapper.toEntity(emailMessageDTO));
+                }
+
+            }
+        }
     }
 }
