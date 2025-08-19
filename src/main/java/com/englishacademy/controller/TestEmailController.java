@@ -11,4 +11,9 @@ public class TestEmailController {
     public String sendEmail() {
         return "email-welcome";
     }
+
+    @GetMapping("/confirm")
+    public String confirmEmail() {
+        return "email-confirm";
+    }
 }
