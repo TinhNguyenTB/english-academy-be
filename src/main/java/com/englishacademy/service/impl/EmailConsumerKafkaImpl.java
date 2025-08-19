@@ -9,11 +9,11 @@ import com.englishacademy.service.EmailConsumerKafka;
 import com.englishacademy.service.EmailProducerKafka;
 import com.englishacademy.service.EmailService;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.MDC;
+import org.apache.logging.log4j.CloseableThreadContext;
+import org.apache.logging.log4j.ThreadContext;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Service;
-
 import java.util.UUID;
 
 @Service
@@ -30,7 +30,7 @@ public class EmailConsumerKafkaImpl implements EmailConsumerKafka {
     @Override
     public void consumeEmail(EmailMessageDTO emailMessageDTO, @Header(name = TraceIdFilter.TRACE_ID, required = false) String traceIdBytes) {
            String traceId = traceIdBytes != null ? new String(traceIdBytes) : UUID.randomUUID().toString();
-           try(MDC.MDCCloseable closeable = MDC.putCloseable(TraceIdFilter.TRACE_ID, traceId)) {
+           try(CloseableThreadContext.Instance closeable = CloseableThreadContext.put(TraceIdFilter.TRACE_ID, traceId)) {
                try{
                    emailService.sendEmail(emailMessageDTO.getTo(), emailMessageDTO.getSubject(), emailMessageDTO.getBody());
                }catch (Exception e){
@@ -38,8 +38,10 @@ public class EmailConsumerKafkaImpl implements EmailConsumerKafka {
                    if (currentRetryNumber < retryMaxNumber) {
                        System.out.println("========== log RETRY number " + currentRetryNumber + " ==========");
                        emailMessageDTO.setRetryNumber(currentRetryNumber + 1);
+                       ThreadContext.put(TraceIdFilter.TRACE_ID, traceId);
                        emailProducerKafka.sendEmailToKafka(emailMessageDTO);
                    }else{
+                       ThreadContext.put(TraceIdFilter.TRACE_ID, traceId);
                        emailProducerKafka.sendEmailToDLT(emailMessageDTO);
                    }
                }
@@ -50,7 +52,7 @@ public class EmailConsumerKafkaImpl implements EmailConsumerKafka {
     @Override
     public void consumeEmailDLT(EmailMessageDTO emailMessageDTO,  @Header(name = TraceIdFilter.TRACE_ID, required = false) String traceIdBytes) {
         String traceId = traceIdBytes != null ? new String(traceIdBytes) : UUID.randomUUID().toString();
-        try (MDC.MDCCloseable closeable = MDC.putCloseable(TraceIdFilter.TRACE_ID, traceId)) {
+        try (CloseableThreadContext.Instance closeable = CloseableThreadContext.put(TraceIdFilter.TRACE_ID, traceId)) {
 
             FailedEmail failedEmail = emailMapper.toEntity(emailMessageDTO);
             failedEmailRepository.save(failedEmail);

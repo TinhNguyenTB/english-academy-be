@@ -4,13 +4,14 @@ import com.englishacademy.dto.request.EmailMessageDTO;
 import com.englishacademy.mdc.TraceIdFilter;
 import com.englishacademy.service.EmailProducerKafka;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.MDC;
+import org.apache.logging.log4j.ThreadContext;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +23,11 @@ public class EmailProducerKafkaImpl implements EmailProducerKafka {
 
     @Override
     public void sendEmailToKafka(EmailMessageDTO emailMessageDTO) {
-        String traceId = MDC.get(TraceIdFilter.TRACE_ID);
+        String traceId = ThreadContext.get(TraceIdFilter.TRACE_ID);
+        if (traceId == null) {
+            traceId = UUID.randomUUID().toString();
+            ThreadContext.put(TraceIdFilter.TRACE_ID, traceId);
+        }
         emailMessageDTO.setCreateAt(LocalDateTime.now());
         kafkaTemplate.send(
                 MessageBuilder.withPayload(emailMessageDTO)
@@ -34,12 +39,16 @@ public class EmailProducerKafkaImpl implements EmailProducerKafka {
 
     @Override
     public void sendEmailToDLT(EmailMessageDTO emailMessageDTO) {
-        String traceId = MDC.get(TraceIdFilter.TRACE_ID);
+        String traceId = ThreadContext.get(TraceIdFilter.TRACE_ID);
+        if (traceId == null) {
+            traceId = UUID.randomUUID().toString();
+            ThreadContext.put(TraceIdFilter.TRACE_ID, traceId);
+        }
         kafkaTemplate.send(
-          MessageBuilder.withPayload(emailMessageDTO)
-                  .setHeader(KafkaHeaders.TOPIC, TOPIC_DLT)
-                  .setHeader(TraceIdFilter.TRACE_ID, traceId)
-                  .build()
+                MessageBuilder.withPayload(emailMessageDTO)
+                        .setHeader(KafkaHeaders.TOPIC, TOPIC_DLT)
+                        .setHeader(TraceIdFilter.TRACE_ID, traceId)
+                        .build()
         );
     }
 }

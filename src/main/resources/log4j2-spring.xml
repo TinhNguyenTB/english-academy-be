@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<Configuration status="WARN">
+<Configuration status="DEBUG" monitorInterval="30">
+
+    <Properties>
+        <Property name="logPath">logs</Property>
+    </Properties>
 
     <Appenders>
         <!--log ra console-->
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{dd-MM-yyyy HH:mm:ss} [%X{traceId}] [%level] [%c{1}:%L] - %msg%n"></PatternLayout>
+            <PatternLayout pattern="%d{dd-MM-yyyy HH:mm:ss} [%X{traceId}] [%level] [%c{1}:%L] - %msg%n"/>
         </Console>
 
         <!--log ra file json-->
-        <RollingFile name="JsonFile" fileName="logs/app.json" filePattern="logs/app-%d{dd-MM-yyyy}.json">
-            <JsonLayout compact="true" eventEol="true" includeMDC="true" includeAllFields="true" includeStacktrace="true"/>
+        <RollingFile name="JsonFile" fileName="${logPath}/app.json" filePattern="${logPath}/app-%d{dd-MM-yyyy}.json">
+            <JsonLayout compact="true" eventEol="true" properties="true"/>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1"/>
             </Policies>
