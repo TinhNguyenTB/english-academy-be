@@ -59,18 +59,19 @@ public class SendEmailController {
 
     @PostMapping("/send-confirm")
     public ResponseData<String> confirm(@RequestBody List<String> emailList) {
-        String otp = otpUtils.generateOTP();
 
         if(emailList.size() == 0) {
             throw new BadRequestException("Email is null or empty");
         }
 
-        Context context = new Context();
-        context.setVariable("otp", otp);
-        String content = templateEngine.process("email-confirm", context);
-        String subject = "Xác nhận";
-
         for(String email : emailList) {
+
+            String otp = otpUtils.generateOTP(email);
+            Context context = new Context();
+            context.setVariable("otp", otp);
+            String content = templateEngine.process("email-confirm", context);
+            String subject = "Xác nhận";
+
             EmailMessageDTO dto = new EmailMessageDTO(email, subject, content, 0, LocalDateTime.now(), LocalDateTime.now());
             emailProducer.sendEmailToKafka(dto);
         }
@@ -79,5 +80,26 @@ public class SendEmailController {
                 .message(Translator.toLocale("email.send.success"))
                 .code(HttpStatus.OK.value())
                 .build();
+    }
+
+    @PostMapping("/verify-otp")
+    public ResponseData<String> verifyOtp(@RequestParam String email, @RequestParam String otp ) {
+        String recvOtp = otpUtils.getOTP(email);
+
+        if(recvOtp == null) {
+            throw new BadRequestException(Translator.toLocale("email.verify.otp.expired"));
+        }
+
+        if(!recvOtp.equals(otp)) {
+            throw new BadRequestException(Translator.toLocale("email.verify.otp.failed"));
+        }
+
+        otpUtils.deleteOTP(email);
+
+        return ResponseData.<String>builder()
+                .message(Translator.toLocale("email.verify.otp.success"))
+                .code(HttpStatus.OK.value())
+                .build();
+
     }
 }
