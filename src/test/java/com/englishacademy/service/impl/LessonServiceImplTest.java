@@ -109,4 +109,121 @@ public class LessonServiceImplTest {
 
         assertEquals("Topic not found", ex.getMessage());
     }
+
+    @Test
+    void testDeleteLesson() {
+        Lesson lesson = new Lesson();
+        lesson.setId(1L);
+
+        lessonServiceImpl.deleteLesson(1L);
+        verify(lessonRepository).deleteById(1L);
+    }
+
+    @Test
+    void testUpdateLesson() {
+       Lesson oldLesson = new Lesson();
+       oldLesson.setId(1L);
+       LessonResponeDTO responeDTO = new LessonResponeDTO();
+       responeDTO.setId(1L);
+       LessonRequestDTO lessonRequestDTO = new LessonRequestDTO();
+       lessonRequestDTO.setTopicId(1L);
+
+       when(lessonRepository.findById(1L)).thenReturn(Optional.of(oldLesson));
+       when(lessonMapper.toResponeDTO(oldLesson)).thenReturn(responeDTO);
+       lessonServiceImpl.updateLesson(1L, lessonRequestDTO);
+       verify(lessonRepository).findById(1L);
+       verify(lessonMapper).toResponeDTO(oldLesson);
+       verify(lessonMapper).updateEntityFromDto(lessonRequestDTO, oldLesson);
+       verify(lessonRepository).save(oldLesson);
+    }
+
+    @Test
+    void testFindByName() {
+        Lesson lesson1 = new Lesson();
+        lesson1.setId(1L);
+        lesson1.setName("English Basics");
+
+        Lesson lesson2 = new Lesson();
+        lesson2.setId(2L);
+        lesson2.setName("Advanced English");
+
+        Page<Lesson> lessons = new PageImpl<>(List.of(lesson1, lesson2));
+        when(lessonRepository.findByNameContainsIgnoreCase("English", null)).thenReturn(lessons);
+
+        Page<LessonResponeDTO> result = lessonServiceImpl.findByName("English", null);
+
+        assertNotNull(result);
+        assertEquals(2, result.getTotalElements());
+        verify(lessonRepository).findByNameContainsIgnoreCase("English", null);
+        verify(lessonMapper).toResponeDTO(lesson1);
+        verify(lessonMapper).toResponeDTO(lesson2);
+    }
+
+    @Test
+    void testFindByTopicId() {
+        Lesson lesson1 = new Lesson();
+        lesson1.setId(1L);
+        lesson1.setTopic(new Topic());
+        lesson1.getTopic().setId(1L);
+
+        Lesson lesson2 = new Lesson();
+        lesson2.setId(2L);
+        lesson2.setTopic(new Topic());
+        lesson2.getTopic().setId(1L);
+
+        Page<Lesson> lessons = new PageImpl<>(List.of(lesson1, lesson2));
+        when(lessonRepository.findByTopicId(1L, null)).thenReturn(lessons);
+
+        Page<LessonResponeDTO> result = lessonServiceImpl.findByTopicId(1L, null);
+
+        assertNotNull(result);
+        assertEquals(2, result.getTotalElements());
+        verify(lessonRepository).findByTopicId(1L, null);
+        verify(lessonMapper).toResponeDTO(lesson1);
+        verify(lessonMapper).toResponeDTO(lesson2);
+    }
+
+    @Test
+    void testFindByOrderIndex() {
+        Lesson lesson1 = new Lesson();
+        lesson1.setId(1L);
+        lesson1.setOrderIndex(1);
+
+        Lesson lesson2 = new Lesson();
+        lesson2.setId(2L);
+        lesson2.setOrderIndex(1);
+
+        Page<Lesson> lessons = new PageImpl<>(List.of(lesson1, lesson2));
+        when(lessonRepository.findByOrderIndex(1, null)).thenReturn(lessons);
+
+        Page<LessonResponeDTO> result = lessonServiceImpl.findByOrderIndex(1, null);
+
+        assertNotNull(result);
+        assertEquals(2, result.getTotalElements());
+        verify(lessonRepository).findByOrderIndex(1, null);
+        verify(lessonMapper).toResponeDTO(lesson1);
+        verify(lessonMapper).toResponeDTO(lesson2);
+    }
+
+    @Test
+    void testFindByTotalQuestion() {
+        Lesson lesson1 = new Lesson();
+        lesson1.setId(1L);
+        lesson1.setTotalQuestion(5);
+
+        Lesson lesson2 = new Lesson();
+        lesson2.setId(2L);
+        lesson2.setTotalQuestion(5);
+
+        Page<Lesson> lessons = new PageImpl<>(List.of(lesson1, lesson2));
+        when(lessonRepository.findByTotalQuestion(5, null)).thenReturn(lessons);
+
+        Page<LessonResponeDTO> result = lessonServiceImpl.findByTotalQuestion(5, null);
+
+        assertNotNull(result);
+        assertEquals(2, result.getTotalElements());
+        verify(lessonRepository).findByTotalQuestion(5, null);
+        verify(lessonMapper).toResponeDTO(lesson1);
+        verify(lessonMapper).toResponeDTO(lesson2);
+    }
 }
