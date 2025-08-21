@@ -1,9 +1,12 @@
 package com.englishacademy.service.impl;
 
+import com.englishacademy.dto.request.LessonRequestDTO;
 import com.englishacademy.dto.response.LessonResponeDTO;
 import com.englishacademy.entity.Lesson;
+import com.englishacademy.entity.Topic;
 import com.englishacademy.mapper.LessonMapper;
 import com.englishacademy.repository.LessonRepository;
+import com.englishacademy.repository.TopicRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,8 +17,7 @@ import org.springframework.data.domain.PageImpl;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -26,6 +28,8 @@ public class LessonServiceImplTest {
     private LessonRepository lessonRepository;
     @Mock
     private LessonMapper lessonMapper;
+    @Mock
+    private TopicRepository topicRepository;
     @InjectMocks
     private LessonServiceImpl lessonServiceImpl;
 
@@ -63,5 +67,46 @@ public class LessonServiceImplTest {
         dto1.setId(1L);
         LessonResponeDTO dto2 = new LessonResponeDTO();
         dto2.setId(2L);
+    }
+
+    @Test
+    void testCreateLesson_success() {
+        Lesson lesson = new Lesson();
+        lesson.setId(1L);
+        Topic topic = new Topic();
+        topic.setId(1L);
+        LessonRequestDTO lessonRequestDTO = new LessonRequestDTO();
+        lessonRequestDTO.setTopicId(1L);
+        LessonResponeDTO lessonResponeDTO = new LessonResponeDTO();
+        lessonResponeDTO.setId(1L);
+
+        when(lessonMapper.toEntity(lessonRequestDTO)).thenReturn(lesson);
+        when(topicRepository.findById(1L)).thenReturn(Optional.of(topic));
+        when(lessonRepository.save(lesson)).thenReturn(lesson);
+        when(lessonMapper.toResponeDTO(lesson)).thenReturn(lessonResponeDTO);
+
+        LessonResponeDTO result = lessonServiceImpl.createLesson(lessonRequestDTO);
+        assertNotNull(result);
+        assertEquals(1L, result.getId());
+        verify(topicRepository).findById(1L);
+        verify(lessonRepository).save(lesson);
+        verify(lessonMapper).toResponeDTO(lesson);
+    }
+
+    @Test
+    void testCreateLesson_failed() {
+        Lesson lesson = new Lesson();
+        lesson.setId(1L);
+
+        LessonRequestDTO requestDTO = new LessonRequestDTO();
+        requestDTO.setTopicId(1L);
+
+        when(lessonMapper.toEntity(requestDTO)).thenReturn(lesson);
+        when(topicRepository.findById(1L)).thenReturn(Optional.empty());
+
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> lessonServiceImpl.createLesson(requestDTO));
+
+        assertEquals("Topic not found", ex.getMessage());
     }
 }
