@@ -3,6 +3,7 @@ package com.englishacademy.service.impl;
 import com.englishacademy.dto.request.TopicRequestDTO;
 import com.englishacademy.dto.response.TopicResponseDTO;
 import com.englishacademy.entity.Topic;
+import com.englishacademy.entity.Word;
 import com.englishacademy.mapper.TopicMapper;
 import com.englishacademy.repository.TopicRepository;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,15 +35,21 @@ public class TopicServiceImplTest {
 
     @Test
     void testGetAllTopics() {
-       Topic topic1 = new Topic();
-       topic1.setId(1L);
-       Topic topic2 = new Topic();
-       topic2.setId(2L);
+        Pageable pageable = PageRequest.of(0, 10);
+        Topic topic = new Topic();
+        topic.setId(1L);
+        Page<Topic> topicPage = new PageImpl<>(List.of(topic));
+        TopicResponseDTO dto = new TopicResponseDTO();
+        dto.setId(1L);
 
-       TopicResponseDTO dto1 = new TopicResponseDTO();
-       dto1.setId(1L);
-       TopicResponseDTO dto2 = new TopicResponseDTO();
-       dto2.setId(2L);
+        when(topicRepository.findAll(pageable)).thenReturn(topicPage);
+        when(topicMapper.toResponseDTO(topic)).thenReturn(dto);
+
+        Page<TopicResponseDTO> result = topicServiceImpl.getAllTopics(pageable);
+
+        assertEquals(1, result.getTotalElements());
+        verify(topicRepository).findAll(pageable);
+        verify(topicMapper).toResponseDTO(topic);
     }
 
     @Test

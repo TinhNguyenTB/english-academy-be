@@ -2,6 +2,7 @@ package com.englishacademy.service.impl;
 
 import com.englishacademy.dto.request.LessonRequestDTO;
 import com.englishacademy.dto.response.LessonResponeDTO;
+import com.englishacademy.dto.response.TopicResponseDTO;
 import com.englishacademy.entity.Lesson;
 import com.englishacademy.entity.Topic;
 import com.englishacademy.mapper.LessonMapper;
@@ -14,6 +15,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -55,18 +59,22 @@ public class LessonServiceImplTest {
 
     @Test
     void testGetAllLessons() {
+        Pageable pageable = PageRequest.of(0, 10);
         Lesson lesson1 = new Lesson();
         lesson1.setId(1L);
-
         Lesson lesson2 = new Lesson();
         lesson2.setId(2L);
 
         Page<Lesson> lessons = new PageImpl<>(List.of(lesson1, lesson2));
+        when(lessonRepository.findAll(pageable)).thenReturn(lessons);
+        when(lessonMapper.toResponeDTO(lesson1)).thenReturn(new LessonResponeDTO());
+        when(lessonMapper.toResponeDTO(lesson2)).thenReturn(new LessonResponeDTO());
 
-        LessonResponeDTO dto1 = new LessonResponeDTO();
-        dto1.setId(1L);
-        LessonResponeDTO dto2 = new LessonResponeDTO();
-        dto2.setId(2L);
+        Page<LessonResponeDTO> result = lessonServiceImpl.getAllLessons(pageable);
+
+        assertNotNull(result);
+        assertEquals(2, result.getTotalElements());
+        verify(lessonRepository).findAll(pageable);
     }
 
     @Test
@@ -157,6 +165,21 @@ public class LessonServiceImplTest {
         verify(lessonRepository).findByNameContainsIgnoreCase("English", null);
         verify(lessonMapper).toResponeDTO(lesson1);
         verify(lessonMapper).toResponeDTO(lesson2);
+    }
+
+    @Test
+    void testFindByName_empty() {
+        String name = "";
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Lesson> emptyPage = Page.empty();
+
+        when(lessonRepository.findAll(pageable)).thenReturn(emptyPage);
+
+        Page<LessonResponeDTO> result = lessonServiceImpl.findByName(name, pageable);
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+        verify(lessonRepository).findAll(pageable);
     }
 
     @Test
