@@ -2,13 +2,14 @@ DELETE FROM englearn.flyway_schema_history;
 DROP TABLE IF EXISTS failed_mail CASCADE;
 
 CREATE TABLE failed_mail (
-     id BIGSERIaAL PRIMARY KEY,
+     id BIGSERIAL,
      email_to VARCHAR(255),
      subject VARCHAR(255),
      body TEXT,
      retry_number INT,
      create_at TIMESTAMP NOT NULL,
-     last_retry_time TIMESTAMP
+     last_retry_time TIMESTAMP,
+     PRIMARY KEY (id, create_at)
 ) PARTITION BY RANGE (create_at);
 
 CREATE TABLE failed_mail_2025_08 PARTITION OF failed_mail
