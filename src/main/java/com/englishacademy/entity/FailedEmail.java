@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.Subselect;
 
 import java.time.LocalDateTime;
 
@@ -13,11 +15,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "failed_mail")
+@Immutable
+@Subselect("SELECT * FROM failed_mail")
 public class FailedEmail {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name="email_to")
